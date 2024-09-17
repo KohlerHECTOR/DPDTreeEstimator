@@ -50,7 +50,7 @@ Finally, you create an online repository on GitHub and push your code online:
 .. prompt:: bash $
 
   git remote add origin https://github.com/your_remote/your_contribution.git
-  git push origin main
+  git push origin master
 
 Develop your own scikit-learn estimators
 ----------------------------------------

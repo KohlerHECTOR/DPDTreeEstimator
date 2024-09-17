@@ -3,10 +3,10 @@ name: Documentation
 on:
   push:
     branches:
-    - main
+    - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   deploy-gh-pages:
@@ -25,8 +25,8 @@ jobs:
     - name: Build documentation
       run: pixi run -e doc build-doc
 
-    - name: Update the main gh-page website
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    - name: Update the master gh-page website
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       uses: peaceiris/actions-gh-pages@v4.0.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
