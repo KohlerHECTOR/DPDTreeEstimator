@@ -120,11 +120,11 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
     Examples
     --------
     >>> from dpdt import DPDTreeClassifier
-    >>> from sklearn import datasets
-    >>> X, y = datasets.load_breast_cancer(return_X_y=True)
-    >>> clf = DPDTreeClassifier(max_depth=3, random_state=42)
-    >>> clf.fit(X, y)
-    >>> print(clf.score(X, y))
+    >>> clf = DPDTreeClassifier()
+    >>> clf.fit([[0, 0], [1, 1]], [0, 1])
+    DPDTreeClassifier()
+    >>> clf.predict([[2., 2.]])
+    array([1])
     """
 
     _parameter_constraints = {
