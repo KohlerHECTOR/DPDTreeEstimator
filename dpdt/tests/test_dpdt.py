@@ -1,9 +1,8 @@
 import pytest
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_iris, make_blobs
+from sklearn.tree import DecisionTreeClassifier
 
 from dpdt import DPDTreeClassifier
-from sklearn.datasets import make_blobs
-from sklearn.tree import DecisionTreeClassifier
 
 
 @pytest.fixture

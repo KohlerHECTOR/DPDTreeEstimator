@@ -19,13 +19,3 @@ Predictor
     DPDTreeClassifier
 
 
-Utilities
-=========
-
-.. autosummary::
-   :toctree: generated/
-   :template: functions.rst
-
-     utils.discovery.all_estimators
-     utils.discovery.all_displays
-     utils.discovery.all_functions

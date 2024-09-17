@@ -2931,9 +2931,9 @@ packages:
   timestamp: 1713930478970
 - kind: pypi
   name: dpdt
-  version: 0.0.0
+  version: 0.1.dev1+ga4d46f8
   path: .
-  sha256: 975158603c0e7ffffcf38fc51768e679a47675bff9fa653c14c1af7df9ea8fca
+  sha256: d13587e1ad81228aa9345769743bd5f66731c96fd7e145167bc5c931311c8847
   requires_dist:
   - scikit-learn>=1.4.2
   requires_python: '>=3.9'
