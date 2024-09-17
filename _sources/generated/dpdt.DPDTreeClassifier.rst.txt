@@ -1,0 +1,47 @@
+﻿DPDTreeClassifier
+====================================
+
+.. currentmodule:: dpdt
+
+.. autoclass:: DPDTreeClassifier
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      
+      
+        ~DPDTreeClassifier.fit
+      
+      
+        ~DPDTreeClassifier.get_metadata_routing
+      
+      
+        ~DPDTreeClassifier.get_params
+      
+      
+        ~DPDTreeClassifier.get_pareto_front
+      
+      
+        ~DPDTreeClassifier.predict
+      
+      
+        ~DPDTreeClassifier.score
+      
+      
+        ~DPDTreeClassifier.set_params
+      
+      
+        ~DPDTreeClassifier.set_score_request
+      
+   
+   
+
+.. include:: dpdt.DPDTreeClassifier.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>
