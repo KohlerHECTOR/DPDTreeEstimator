@@ -77,3 +77,6 @@ target/
 
 # auto-generated files
 dpdt/_version.py
+
+# to keep track of speed increases
+profile.txt
