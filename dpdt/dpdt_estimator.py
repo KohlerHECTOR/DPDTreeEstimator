@@ -30,7 +30,7 @@ class State:
         self.obs = label
         self.is_terminal = is_terminal
         self.nz = nz
-        self._actions = [0 for _ in range(max_action_nb)]
+        self._actions = [0] * max_action_nb
         self._counter_action = 0
 
     def add_action(self, action):
@@ -208,49 +208,42 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         stack = [(self._root, 0)]
         expanded = [None]
         trees = {}
+
         while stack:
             tmp, d = stack[-1]
 
             if tmp is expanded[-1]:
-                # Do backprop
-                qs = np.zeros(
-                    (len(tmp.valid_actions()), self.max_nb_trees), dtype=np.float32
+                qs = np.array(
+                    [
+                        a.rewards.mean(axis=0)
+                        + sum(
+                            p * s.qs.max(axis=0)
+                            for s, p in zip(a.next_states, a.probas)
+                        )
+                        for a in tmp.valid_actions()
+                    ]
                 )
-                for a_idx, a in enumerate(tmp.valid_actions()):
-                    q = np.zeros(self.max_nb_trees, dtype=np.float32)
-                    for s, p in zip(a.next_states, a.probas):
-                        q += p * s.qs.max(axis=0)
-                    qs[a_idx, :] = np.mean(a.rewards, axis=0) + q
 
-                idx = np.argmax(qs, axis=0)
+                idx = qs.argmax(axis=0)
                 tmp.qs = qs
                 trees[tuple(tmp.obs.tolist() + [d])] = [
                     tmp.valid_actions()[i].action_label for i in idx
                 ]
 
                 tmp._actions = None  # for memory saving
-
                 expanded.pop()
                 stack.pop()
 
             elif not tmp.is_terminal:
                 tmp = self._expand_node(tmp, d)
                 expanded.append(tmp)
-                all_next_states = [
-                    j
-                    for sub in [a.next_states for a in tmp.valid_actions()]
-                    for j in sub
-                ]
-                stack.extend((j, d + 1) for j in all_next_states)
+                stack.extend(
+                    (s, d + 1) for a in tmp.valid_actions() for s in a.next_states
+                )
 
             else:  # tmp is a terminal state
-                # Set qs for terminal states
-                expanded[-1].valid_actions()[0].next_states[0].qs = np.zeros(
-                    (1, self.max_nb_trees), dtype=np.float32
-                )
-                expanded[-1].valid_actions()[0].next_states[1].qs = np.zeros(
-                    (1, self.max_nb_trees), dtype=np.float32
-                )
+                for next_state in expanded[-1].valid_actions()[0].next_states:
+                    next_state.qs = np.zeros((1, self.max_nb_trees), dtype=np.float32)
                 stack.pop()
 
         return trees
@@ -288,14 +281,16 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
                 if tmp is expanded[-1]:
                     # Do backprop
-                    qs = np.zeros(
-                        (len(tmp.valid_actions()), self.max_nb_trees), dtype=np.float32
+                    qs = np.array(
+                        [
+                            a.rewards.mean(axis=0)
+                            + sum(
+                                p * s.qs.max(axis=0)
+                                for s, p in zip(a.next_states, a.probas)
+                            )
+                            for a in tmp.valid_actions()
+                        ]
                     )
-                    for a_idx, a in enumerate(tmp.valid_actions()):
-                        q = np.zeros(self.max_nb_trees, dtype=np.float32)
-                        for s, p in zip(a.next_states, a.probas):
-                            q += p * s.qs.max(axis=0)
-                        qs[a_idx, :] = np.mean(a.rewards, axis=0) + q
 
                     idx = np.argmax(qs, axis=0)
                     tmp.qs = qs
@@ -304,43 +299,37 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                     ]
 
                     tmp._actions = None  # for memory saving
-
                     expanded.pop()
                     stack.pop()
 
                 elif not tmp.is_terminal:
                     tmp = self._expand_node(tmp, d)
                     expanded.append(tmp)
-                    all_next_states = [
-                        j
-                        for sub in [a.next_states for a in tmp.valid_actions()]
-                        for j in sub
-                    ]
-                    stack.extend((j, d + 1) for j in all_next_states)
+                    stack.extend(
+                        (s, d + 1) for a in tmp.valid_actions() for s in a.next_states
+                    )
 
                 else:  # tmp is a terminal state
                     # Set qs for terminal states
-                    expanded[-1].valid_actions()[0].next_states[0].qs = np.zeros(
-                        (1, self.max_nb_trees), dtype=np.float32
-                    )
-                    expanded[-1].valid_actions()[0].next_states[1].qs = np.zeros(
-                        (1, self.max_nb_trees), dtype=np.float32
-                    )
+                    for next_state in expanded[-1].valid_actions()[0].next_states:
+                        next_state.qs = np.zeros(
+                            (1, self.max_nb_trees), dtype=np.float32
+                        )
                     stack.pop()
 
-        qs = np.zeros((len(root.valid_actions()), self.max_nb_trees), dtype=np.float32)
-        for a_idx, a in enumerate(root.valid_actions()):
-            q = np.zeros(self.max_nb_trees, dtype=np.float32)
-            for s, p in zip(a.next_states, a.probas):
-                q += p * s.qs.max(axis=0)
-            qs[a_idx, :] = np.mean(a.rewards, axis=0) + q
+        qs = np.array(
+            [
+                a.rewards.mean(axis=0)
+                + sum(p * s.qs.max(axis=0) for s, p in zip(a.next_states, a.probas))
+                for a in root.valid_actions()
+            ]
+        )
 
         idx = np.argmax(qs, axis=0)
         root.qs = qs
         trees[tuple(root.obs.tolist() + [0])] = [
             root.valid_actions()[i].action_label for i in idx
         ]
-
         root._actions = None  # for memory saving
         return trees
 
@@ -364,99 +353,65 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         """
         classes, counts = np.unique(self.y_[node.nz], return_counts=True)
         rstar = max(counts) / node.nz.sum() - 1.0
-        astar = classes[np.argmax(counts)]
-        rew = np.ones((2, self.max_nb_trees), dtype=np.float32) * rstar
-        a = Action(
-            astar,
-            rew,
-            (1, 0),
-            (
-                State(label=self._terminal_state, nz=[0], is_terminal=True),
-                State(label=self._terminal_state, nz=[0], is_terminal=True),
-            ),
-        )
-        node.add_action(a)
-        # If there is still depth budget and the current split has more than 1 class:
-        if rstar < 0 and depth < self.max_depth:
-            # Get the splits from CART
-            # Note that that 2 leaf nodes means that the split is greedy.
-            if depth <= len(self.cart_nodes_list) - 1:
-                clf = DecisionTreeClassifier(
-                    max_leaf_nodes=max(2, self.cart_nodes_list[depth]),
-                    random_state=self.random_state,
-                )
-            # If depth budget reaches limit, get the max entropy split.
-            else:
-                clf = DecisionTreeClassifier(
-                    max_leaf_nodes=2, random_state=self.random_state
-                )
+        astar = classes[counts.argmax()]
+        rew = np.full((2, self.max_nb_trees), rstar, dtype=np.float32)
 
+        terminal_state = State(label=self._terminal_state, nz=[0], is_terminal=True)
+        node.add_action(Action(astar, rew, (1, 0), (terminal_state, terminal_state)))
+
+        if rstar < 0 and depth < self.max_depth:
+            clf = DecisionTreeClassifier(
+                max_leaf_nodes=max(2, self.cart_nodes_list[depth])
+                if depth < len(self.cart_nodes_list)
+                else 2,
+                random_state=self.random_state,
+            )
             clf.fit(self.X_[node.nz], self.y_[node.nz])
 
-            # Extract the splits from the CART tree.
-            masks = clf.tree_.feature >= 0  # get tested features.
-
-            # Apply mask to features and thresholds to get valid indices
+            masks = clf.tree_.feature >= 0
             valid_features = clf.tree_.feature[masks]
             valid_thresholds = clf.tree_.threshold[masks]
-            lefts = (
-                self.X_[:, valid_features] <= valid_thresholds
-            )  # is a 2D array with nb CART tree tests columns.
-            rights = np.logical_not(
-                lefts
-            )  # as many rows as data in the whole training set.
 
-            # Masking data passing threshold and precedent thresholds.
-            lefts *= node.nz[:, np.newaxis]
-            rights *= node.nz[:, np.newaxis]
+            lefts = (self.X_[:, valid_features] <= valid_thresholds) & node.nz[
+                :, np.newaxis
+            ]
+            rights = ~lefts & node.nz[:, np.newaxis]
 
-            # Compute probabilities
-            p_left = lefts.sum(axis=0) / node.nz.sum()  # summing column values.
-            # Non-zero values are data indices passing all tests in the MDP trajectory.
+            p_left = lefts.sum(axis=0) / node.nz.sum()
             p_right = 1 - p_left
 
-            feat_thresh = list(
-                zip(valid_features, valid_thresholds)
-            )  # len of the list is nb tests in CART tree.
+            feat_thresh = list(zip(valid_features, valid_thresholds))
 
-            # Precompute next observations for left and right splits
             next_obs_left = np.tile(node.obs, (len(feat_thresh), 1))
             next_obs_right = np.tile(node.obs, (len(feat_thresh), 1))
-            indices = np.arange(len(feat_thresh))
 
-            # The next obs bounds updated as the threshold values.
-            next_obs_left[indices, self.X_.shape[1] + valid_features] = valid_thresholds
-            next_obs_right[indices, valid_features] = valid_thresholds
+            next_obs_left[
+                np.arange(len(feat_thresh)), self.X_.shape[1] + valid_features
+            ] = valid_thresholds
+            next_obs_right[
+                np.arange(len(feat_thresh)), valid_features
+            ] = valid_thresholds
 
-            # Precompute next states for left and right
-            # There should be a pair of next_states per tested features.
-            if depth + 1 < len(self.cart_nodes_list):
-                act_max = self.cart_nodes_list[depth + 1]
-            else:
-                act_max = 1
+            act_max = (
+                self.cart_nodes_list[depth + 1]
+                if depth + 1 < len(self.cart_nodes_list)
+                else 1
+            )
+
             next_states_left = [
-                State(
-                    next_obs_left[i], lefts[:, i], max_action_nb=act_max + len(classes)
-                )
-                for i in range(len(valid_features))
+                State(obs, nz, max_action_nb=act_max + len(classes))
+                for obs, nz in zip(next_obs_left, lefts.T)
             ]
             next_states_right = [
-                State(
-                    next_obs_right[i],
-                    rights[:, i],
-                    max_action_nb=act_max + len(classes),
-                )
-                for i in range(len(valid_features))
+                State(obs, nz, max_action_nb=act_max + len(classes))
+                for obs, nz in zip(next_obs_right, rights.T)
             ]
 
             actions = [
-                Action(
-                    split,
-                    np.tile(self._zetas, (2, 1)),
-                    (p_left[i], p_right[i]),
-                    (next_states_left[i], next_states_right[i]),
+                Action(split, np.tile(self._zetas, (2, 1)), (pl, pr), (sl, sr))
+                for split, pl, pr, sl, sr in zip(
+                    feat_thresh, p_left, p_right, next_states_left, next_states_right
                 )
-                for i, split in enumerate(feat_thresh)
             ]
 
             for action in actions:
