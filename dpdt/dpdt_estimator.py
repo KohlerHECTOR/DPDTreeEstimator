@@ -24,14 +24,13 @@ class State:
         Indicates if the state is a terminal state.
     """
 
-    __slots__ = ["obs", "actions", "qs", "is_terminal", "nz"]
-
-    def __init__(self, label, nz, is_terminal=False):
+    def __init__(self, label, nz, is_terminal=False, max_action_nb=32):
         """Initialize the State object."""
         self.obs = label
-        self.actions = []
         self.is_terminal = is_terminal
         self.nz = nz
+        self._actions = [0 for _ in range(max_action_nb)]
+        self._counter_action = 0
 
     def add_action(self, action):
         """Add an action to the state.
@@ -41,8 +40,18 @@ class State:
         action : Action
             The action to be added to the state.
         """
-        self.actions.append(action)
+        self._actions[self._counter_action] = action
+        self._counter_action += 1
 
+    def valid_actions(self):
+        """return the list of possible actions in that state.
+
+        Returns
+        -------
+        valid_acts : list
+            Returns non-zero actions.
+        """
+        return self._actions[:self._counter_action]
 
 class Action:
     """Represent an action in the Markov Decision Process (MDP).
@@ -53,28 +62,12 @@ class Action:
         The action representation (e.g., a split decision).
     """
 
-    def __init__(self, action):
+    def __init__(self, action, reward, proba, next_s):
         """Initialize the Action object."""
-        self.action = action
-        self.rewards = []
-        self.probas = []
-        self.next_states = []
-
-    def transition(self, reward, proba, next_s):
-        """Add a transition for the action.
-
-        Parameters
-        ----------
-        reward : float
-            The reward associated with the transition.
-        proba : float
-            The probability of the transition.
-        next_s : State
-            The next state resulting from the transition.
-        """
-        self.rewards.append(reward)
-        self.probas.append(proba)
-        self.next_states.append(next_s)
+        self.action_label = action
+        self.rewards = reward
+        self.probas = proba
+        self.next_states = next_s
 
 
 class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
@@ -209,9 +202,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
             if tmp is expanded[-1]:
                 qs = np.zeros(
-                    (len(tmp.actions), self.max_nb_trees), dtype=np.float32
+                    (len(tmp.valid_actions()), self.max_nb_trees), dtype=np.float32
                 )
-                for a_idx, a in enumerate(tmp.actions):
+                for a_idx, a in enumerate(tmp.valid_actions()):
                     q = np.zeros(self.max_nb_trees, dtype=np.float32)
                     for s, p in zip(a.next_states, a.probas):
                         q += p * s.qs.max(axis=0)
@@ -220,10 +213,10 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 idx = np.argmax(qs, axis=0)
                 tmp.qs = qs
                 trees[tuple(tmp.obs.tolist() + [d])] = [
-                    tmp.actions[i].action for i in idx
+                    tmp.valid_actions()[i].action_label for i in idx
                 ]
 
-                tmp.actions = None  # for memory saving
+                tmp._actions = None  # for memory saving
 
                 expanded.pop()
                 stack.pop()
@@ -232,13 +225,13 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 tmp = self._expand_node(tmp, d)
                 expanded.append(tmp)
                 all_next_states = [
-                    j for sub in [a.next_states for a in tmp.actions] for j in sub
+                    j for sub in [a.next_states for a in tmp.valid_actions()] for j in sub
                 ]
                 stack.extend((j, d + 1) for j in all_next_states)
 
             else:  # tmp is a terminal state
                 # do backprop
-                expanded[-1].actions[0].next_states[0].qs = np.zeros(
+                expanded[-1].valid_actions()[0].next_states[0].qs = np.zeros(
                     (1, self.max_nb_trees), dtype=np.float32
                 )
                 # trees[tuple(tmp.obs.tolist() + [d])] = None
@@ -267,9 +260,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         classes, counts = np.unique(self.y_[node.nz], return_counts=True)
         rstar = max(counts) / node.nz.sum() - 1.0
         astar = classes[np.argmax(counts)]
-        next_state = State(self._terminal_state, [0], is_terminal=True)
-        a = Action(astar)
-        a.transition([rstar] * self.max_nb_trees, 1, next_state)
+        next_state = State(label=self._terminal_state, nz=[0], is_terminal=True)
+        rew = np.ones((2, self.max_nb_trees), dtype=np.float32) * rstar
+        a = Action(astar, rew, (1, 0), (next_state, next_state))
         node.add_action(a)
         # If there is still depth budget and the current split has more than 1 class:
         if rstar < 0 and depth < self.max_depth:
@@ -323,33 +316,23 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             next_obs_left[indices, self.X_.shape[1] + valid_features] = valid_thresholds
             next_obs_right[indices, valid_features] = valid_thresholds
 
-            # Create Action objects for each split
-            actions = [Action(split) for split in feat_thresh]
-
             # Precompute next states for left and right
             # There should be a pair of next_states per tested features.
+            if depth + 1 < len(self.cart_nodes_list):
+                act_max = self.cart_nodes_list[depth + 1]
+            else:
+                act_max = 1
             next_states_left = [
-                State(next_obs_left[i], lefts[:, i]) for i in range(len(valid_features))
+                State(next_obs_left[i], lefts[:, i], max_action_nb=act_max + len(classes)) 
+                for i in range(len(valid_features))
             ]
             next_states_right = [
-                State(next_obs_right[i], rights[:, i])
+                State(next_obs_right[i], rights[:, i], max_action_nb=act_max + len(classes))
                 for i in range(len(valid_features))
             ]
 
-            # Perform transitions, the reward is the regulizer term.
-            for i in range(len(valid_features)):
-                actions[i].transition(
-                    self._zetas,
-                    p_left[i],
-                    next_states_left[i],
-                )
+            actions = [Action(split, np.tile(self._zetas, (2, 1)), (p_left[i], p_right[i]), (next_states_left[i], next_states_right[i])) for i, split in enumerate(feat_thresh)]
 
-            for i in range(len(valid_features)):
-                actions[i].transition(
-                    self._zetas,
-                    p_right[i],
-                    next_states_right[i],
-                )
             for action in actions:
                 node.add_action(action)
         return node
