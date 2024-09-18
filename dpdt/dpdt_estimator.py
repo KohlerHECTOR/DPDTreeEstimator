@@ -30,7 +30,6 @@ class State:
         """Initialize the State object."""
         self.obs = label
         self.actions = []
-        self.qs = []
         self.is_terminal = is_terminal
         self.nz = nz
 
@@ -180,7 +179,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             nz=np.ones(self.X_.shape[0], dtype=bool),
         )
 
-        self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float32)
+        self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float64)
 
         self._trees = self._build_mdp_opt_pol()
         return self
@@ -209,17 +208,17 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             tmp, d = stack[-1]
 
             if tmp is expanded[-1]:
-                tmp.qs = np.zeros(
+                qs = np.zeros(
                     (len(tmp.actions), self.max_nb_trees), dtype=np.float32
                 )
                 for a_idx, a in enumerate(tmp.actions):
                     q = np.zeros(self.max_nb_trees, dtype=np.float32)
                     for s, p in zip(a.next_states, a.probas):
                         q += p * s.qs.max(axis=0)
-                    tmp.qs[a_idx, :] = np.mean(a.rewards, axis=0) + q
+                    qs[a_idx, :] = np.mean(a.rewards, axis=0) + q
 
-                idx = np.argmax(tmp.qs, axis=0)
-
+                idx = np.argmax(qs, axis=0)
+                tmp.qs = qs
                 trees[tuple(tmp.obs.tolist() + [d])] = [
                     tmp.actions[i].action for i in idx
                 ]
@@ -242,7 +241,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 expanded[-1].actions[0].next_states[0].qs = np.zeros(
                     (1, self.max_nb_trees), dtype=np.float32
                 )
-                trees[tuple(tmp.obs.tolist() + [d])] = None
+                # trees[tuple(tmp.obs.tolist() + [d])] = None
                 stack.pop()
 
         return trees
@@ -290,7 +289,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             clf.fit(self.X_[node.nz], self.y_[node.nz])
 
             # Extract the splits from the CART tree.
-
             masks = clf.tree_.feature >= 0  # get tested features.
 
             # Apply mask to features and thresholds to get valid indices
