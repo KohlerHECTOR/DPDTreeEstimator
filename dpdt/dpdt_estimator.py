@@ -8,8 +8,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import check_classification_targets
-from sklearn.utils.validation import check_is_fitted
 from sklearn.utils.parallel import Parallel, delayed
+from sklearn.utils.validation import check_is_fitted
 
 
 class State:
@@ -52,7 +52,8 @@ class State:
         valid_acts : list
             Returns non-zero actions.
         """
-        return self._actions[:self._counter_action]
+        return self._actions[: self._counter_action]
+
 
 class Action:
     """Represent an action in the Markov Decision Process (MDP).
@@ -128,18 +129,22 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         "cart_nodes_list": ["array-like"],
         "random_state": [Interval(Integral, 0, None, closed="left")],
         "n_jobs": [Integral, None, StrOptions({"best"})],
-
     }
 
     def __init__(
-        self, max_depth=3, max_nb_trees=1000, cart_nodes_list=(3,), random_state=42, n_jobs=None
+        self,
+        max_depth=3,
+        max_nb_trees=1000,
+        cart_nodes_list=(3,),
+        random_state=42,
+        n_jobs=None,
     ):
         """Initialize the DPDTreeClassifier."""
         self.max_depth = max_depth
         self.max_nb_trees = max_nb_trees
         self.cart_nodes_list = cart_nodes_list
         self.random_state = random_state
-        self.n_jobs=n_jobs
+        self.n_jobs = n_jobs
 
     @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y):
@@ -232,7 +237,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 tmp = self._expand_node(tmp, d)
                 expanded.append(tmp)
                 all_next_states = [
-                    j for sub in [a.next_states for a in tmp.valid_actions()] for j in sub
+                    j
+                    for sub in [a.next_states for a in tmp.valid_actions()]
+                    for j in sub
                 ]
                 stack.extend((j, d + 1) for j in all_next_states)
 
@@ -241,10 +248,13 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 expanded[-1].valid_actions()[0].next_states[0].qs = np.zeros(
                     (1, self.max_nb_trees), dtype=np.float32
                 )
+                expanded[-1].valid_actions()[0].next_states[1].qs = np.zeros(
+                    (1, self.max_nb_trees), dtype=np.float32
+                )
                 stack.pop()
 
         return trees
-    
+
     def _build_mdp_opt_pol_parallel(self):
         """Build the Markov Decision Process (MDP) for the trees.
 
@@ -265,8 +275,8 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
         root = self._expand_node(self._root, 0)
         depth_0 = [
-                    j for sub in [a.next_states for a in root.valid_actions()] for j in sub
-                ]
+            j for sub in [a.next_states for a in root.valid_actions()] for j in sub
+        ]
         # DFS
         trees = {}
 
@@ -302,7 +312,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                     tmp = self._expand_node(tmp, d)
                     expanded.append(tmp)
                     all_next_states = [
-                        j for sub in [a.next_states for a in tmp.valid_actions()] for j in sub
+                        j
+                        for sub in [a.next_states for a in tmp.valid_actions()]
+                        for j in sub
                     ]
                     stack.extend((j, d + 1) for j in all_next_states)
 
@@ -311,11 +323,12 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                     expanded[-1].valid_actions()[0].next_states[0].qs = np.zeros(
                         (1, self.max_nb_trees), dtype=np.float32
                     )
+                    expanded[-1].valid_actions()[0].next_states[1].qs = np.zeros(
+                        (1, self.max_nb_trees), dtype=np.float32
+                    )
                     stack.pop()
-        
-        qs = np.zeros(
-            (len(root.valid_actions()), self.max_nb_trees), dtype=np.float32
-        )
+
+        qs = np.zeros((len(root.valid_actions()), self.max_nb_trees), dtype=np.float32)
         for a_idx, a in enumerate(root.valid_actions()):
             q = np.zeros(self.max_nb_trees, dtype=np.float32)
             for s, p in zip(a.next_states, a.probas):
@@ -330,7 +343,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
         root._actions = None  # for memory saving
         return trees
-        
 
     def _expand_node(self, node, depth=0):
         """Expand a node in the MDP.
@@ -353,9 +365,16 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         classes, counts = np.unique(self.y_[node.nz], return_counts=True)
         rstar = max(counts) / node.nz.sum() - 1.0
         astar = classes[np.argmax(counts)]
-        next_state = State(label=self._terminal_state, nz=[0], is_terminal=True)
         rew = np.ones((2, self.max_nb_trees), dtype=np.float32) * rstar
-        a = Action(astar, rew, (1, 0), (next_state, next_state))
+        a = Action(
+            astar,
+            rew,
+            (1, 0),
+            (
+                State(label=self._terminal_state, nz=[0], is_terminal=True),
+                State(label=self._terminal_state, nz=[0], is_terminal=True),
+            ),
+        )
         node.add_action(a)
         # If there is still depth budget and the current split has more than 1 class:
         if rstar < 0 and depth < self.max_depth:
@@ -416,15 +435,29 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             else:
                 act_max = 1
             next_states_left = [
-                State(next_obs_left[i], lefts[:, i], max_action_nb=act_max + len(classes)) 
+                State(
+                    next_obs_left[i], lefts[:, i], max_action_nb=act_max + len(classes)
+                )
                 for i in range(len(valid_features))
             ]
             next_states_right = [
-                State(next_obs_right[i], rights[:, i], max_action_nb=act_max + len(classes))
+                State(
+                    next_obs_right[i],
+                    rights[:, i],
+                    max_action_nb=act_max + len(classes),
+                )
                 for i in range(len(valid_features))
             ]
 
-            actions = [Action(split, np.tile(self._zetas, (2, 1)), (p_left[i], p_right[i]), (next_states_left[i], next_states_right[i])) for i, split in enumerate(feat_thresh)]
+            actions = [
+                Action(
+                    split,
+                    np.tile(self._zetas, (2, 1)),
+                    (p_left[i], p_right[i]),
+                    (next_states_left[i], next_states_right[i]),
+                )
+                for i, split in enumerate(feat_thresh)
+            ]
 
             for action in actions:
                 node.add_action(action)
