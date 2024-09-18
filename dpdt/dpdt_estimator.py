@@ -6,9 +6,10 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, _fit_context
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils._param_validation import Interval
+from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import check_is_fitted
+from sklearn.utils.parallel import Parallel, delayed
 
 
 class State:
@@ -83,6 +84,8 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         Fixes randomness of the classifier. Randomness happens in the calls to cart.
     cart_nodes_list : list of int, default=(3,)
         List containing the number of leaf nodes for the CART trees at each depth.
+    n_jobs : int, default=None
+        The number of jobs to run in parallel.
 
     Attributes
     ----------
@@ -124,16 +127,19 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         "max_nb_trees": [Interval(Integral, 1, None, closed="left")],
         "cart_nodes_list": ["array-like"],
         "random_state": [Interval(Integral, 0, None, closed="left")],
+        "n_jobs": [Integral, None, StrOptions({"best"})],
+
     }
 
     def __init__(
-        self, max_depth=3, max_nb_trees=1000, cart_nodes_list=(3,), random_state=42
+        self, max_depth=3, max_nb_trees=1000, cart_nodes_list=(3,), random_state=42, n_jobs=None
     ):
         """Initialize the DPDTreeClassifier."""
         self.max_depth = max_depth
         self.max_nb_trees = max_nb_trees
         self.cart_nodes_list = cart_nodes_list
         self.random_state = random_state
+        self.n_jobs=n_jobs
 
     @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y):
@@ -174,7 +180,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
         self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float64)
 
-        self._trees = self._build_mdp_opt_pol()
+        self._trees = self._build_mdp_opt_pol_parallel()
         return self
 
     def _build_mdp_opt_pol(self):
@@ -201,6 +207,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             tmp, d = stack[-1]
 
             if tmp is expanded[-1]:
+                # Do backprop
                 qs = np.zeros(
                     (len(tmp.valid_actions()), self.max_nb_trees), dtype=np.float32
                 )
@@ -230,14 +237,100 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 stack.extend((j, d + 1) for j in all_next_states)
 
             else:  # tmp is a terminal state
-                # do backprop
+                # Set qs for terminal states
                 expanded[-1].valid_actions()[0].next_states[0].qs = np.zeros(
                     (1, self.max_nb_trees), dtype=np.float32
                 )
-                # trees[tuple(tmp.obs.tolist() + [d])] = None
                 stack.pop()
 
         return trees
+    
+    def _build_mdp_opt_pol_parallel(self):
+        """Build the Markov Decision Process (MDP) for the trees.
+
+        This method constructs an MDP using a depth-first search approach. Each node
+        in the tree represents a state in the MDP, and actions are determined based
+        on potential splits from a decision tree classifier.
+
+        Returns
+        -------
+        dict
+            A dictionary representing the tree policies.
+
+        References
+        ----------
+        .. [1] H. Kohler et. al., "Interpretable Decision Tree Search as a Markov
+               Decision Process" arXiv https://arxiv.org/abs/2309.12701.
+        """
+
+        root = self._expand_node(self._root, 0)
+        depth_0 = [
+                    j for sub in [a.next_states for a in root.valid_actions()] for j in sub
+                ]
+        # DFS
+        trees = {}
+
+        for s in depth_0:
+            stack = [(s, 1)]
+            expanded = [None, root]
+            while stack:
+                tmp, d = stack[-1]
+
+                if tmp is expanded[-1]:
+                    # Do backprop
+                    qs = np.zeros(
+                        (len(tmp.valid_actions()), self.max_nb_trees), dtype=np.float32
+                    )
+                    for a_idx, a in enumerate(tmp.valid_actions()):
+                        q = np.zeros(self.max_nb_trees, dtype=np.float32)
+                        for s, p in zip(a.next_states, a.probas):
+                            q += p * s.qs.max(axis=0)
+                        qs[a_idx, :] = np.mean(a.rewards, axis=0) + q
+
+                    idx = np.argmax(qs, axis=0)
+                    tmp.qs = qs
+                    trees[tuple(tmp.obs.tolist() + [d])] = [
+                        tmp.valid_actions()[i].action_label for i in idx
+                    ]
+
+                    tmp._actions = None  # for memory saving
+
+                    expanded.pop()
+                    stack.pop()
+
+                elif not tmp.is_terminal:
+                    tmp = self._expand_node(tmp, d)
+                    expanded.append(tmp)
+                    all_next_states = [
+                        j for sub in [a.next_states for a in tmp.valid_actions()] for j in sub
+                    ]
+                    stack.extend((j, d + 1) for j in all_next_states)
+
+                else:  # tmp is a terminal state
+                    # Set qs for terminal states
+                    expanded[-1].valid_actions()[0].next_states[0].qs = np.zeros(
+                        (1, self.max_nb_trees), dtype=np.float32
+                    )
+                    stack.pop()
+        
+        qs = np.zeros(
+            (len(root.valid_actions()), self.max_nb_trees), dtype=np.float32
+        )
+        for a_idx, a in enumerate(root.valid_actions()):
+            q = np.zeros(self.max_nb_trees, dtype=np.float32)
+            for s, p in zip(a.next_states, a.probas):
+                q += p * s.qs.max(axis=0)
+            qs[a_idx, :] = np.mean(a.rewards, axis=0) + q
+
+        idx = np.argmax(qs, axis=0)
+        root.qs = qs
+        trees[tuple(root.obs.tolist() + [0])] = [
+            root.valid_actions()[i].action_label for i in idx
+        ]
+
+        root._actions = None  # for memory saving
+        return trees
+        
 
     def _expand_node(self, node, depth=0):
         """Expand a node in the MDP.
@@ -388,7 +481,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 a = self._trees[tuple(o.tolist() + [H])][zeta_index]
             lengths[i] = H
             y_pred[i] = a
-        return y_pred, lengths.mean()
+        return (y_pred, lengths.mean())
 
     def get_pareto_front(self, X, y):
         """Compute the decision path lengths / test accuracy Pareto front of DPDTrees.
@@ -409,7 +502,18 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         """
         scores = np.zeros(len(self._zetas), dtype=np.float32)
         decision_path_length = np.zeros(len(self._zetas), dtype=np.float32)
-        for z in range(len(self._zetas)):
-            pred, decision_path_length[z] = self._predict_zeta(X, z)
-            scores[z] = accuracy_score(y, pred)
+
+        if self.n_jobs == "best":
+            n_jobs = len(self._zetas)
+        else:
+            n_jobs = self.n_jobs
+
+        results = Parallel(
+            n_jobs=n_jobs,
+            prefer="threads",
+        )(delayed(self._predict_zeta)(X, z) for z in range(len(self._zetas)))
+
+        for z, pred_length in enumerate(results):
+            scores[z] = accuracy_score(y, pred_length[0])
+            decision_path_length[z] = pred_length[1]
         return scores, decision_path_length
