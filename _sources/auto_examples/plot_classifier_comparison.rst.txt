@@ -33,7 +33,7 @@ The plots show training points in solid colors and testing points
 semi-transparent. The lower right shows the classification accuracy on the test
 set.
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-158
+.. GENERATED FROM PYTHON SOURCE LINES 18-156
 
 
 
@@ -57,7 +57,6 @@ set.
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.colors import ListedColormap
-
     from sklearn.datasets import make_circles, make_classification, make_moons
     from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
     from sklearn.gaussian_process import GaussianProcessClassifier
@@ -80,8 +79,7 @@ set.
         "Gaussian Process",
         "Decision Tree",
         "DP Decision Tree",
-        "XG Boost"
-        "Random Forest",
+        "XG BoostRandom Forest",
         "Neural Net",
         "Naive Bayes",
     ]
@@ -115,7 +113,7 @@ set.
         linearly_separable,
     ]
 
-    figure = plt.figure(figsize=(23,9))
+    figure = plt.figure(figsize=(23, 9))
     # iterate over datasets
     for ds_cnt, ds in enumerate(datasets):
         i = ds_cnt * (len(classifiers) + 1) + 1  # Reset i for each dataset
@@ -192,7 +190,7 @@ set.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.143 seconds)
+   **Total running time of the script:** (0 minutes 2.166 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_classifier_comparison.py:
