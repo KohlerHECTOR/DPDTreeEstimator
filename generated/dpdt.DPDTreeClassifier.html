@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>DPDTreeClassifier &#8212; DPDT 0.1.dev16+gf45d5ec documentation</title>
+    <title>DPDTreeClassifier &#8212; DPDT 0.1.dev17+g0f89900 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=5aa56cf8"></script>
+    <script src="../_static/documentation_options.js?v=a10e1b64"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
@@ -127,8 +127,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="DPDT 0.1.dev16+gf45d5ec documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="DPDT 0.1.dev16+gf45d5ec documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="DPDT 0.1.dev17+g0f89900 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="DPDT 0.1.dev17+g0f89900 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -411,11 +411,11 @@ document.write(`
 <dd class="field-odd"><dl class="simple">
 <dt><strong>max_depth</strong><span class="classifier">int</span></dt><dd><p>The maximum depth of the tree.</p>
 </dd>
-<dt><strong>max_nb_trees</strong><span class="classifier">int, default=1000</span></dt><dd><p>The maximum number of trees.</p>
+<dt><strong>max_nb_trees</strong><span class="classifier">int, default=100</span></dt><dd><p>The maximum number of trees.</p>
 </dd>
 <dt><strong>random_state</strong><span class="classifier">int, default=42</span></dt><dd><p>Fixes randomness of the classifier. Randomness happens in the calls to cart.</p>
 </dd>
-<dt><strong>cart_nodes_list</strong><span class="classifier">list of int, default=(3,)</span></dt><dd><p>List containing the number of leaf nodes for the CART trees at each depth.</p>
+<dt><strong>cart_nodes_list</strong><span class="classifier">list of int, default=(32,)</span></dt><dd><p>List containing the number of leaf nodes for the CART trees at each depth.</p>
 </dd>
 <dt><strong>n_jobs</strong><span class="classifier">int, default=None</span></dt><dd><p>The number of jobs to run in parallel.</p>
 </dd>
