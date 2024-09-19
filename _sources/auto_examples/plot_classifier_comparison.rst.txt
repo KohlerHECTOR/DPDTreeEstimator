@@ -33,12 +33,12 @@ The plots show training points in solid colors and testing points
 semi-transparent. The lower right shows the classification accuracy on the test
 set.
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-144
+.. GENERATED FROM PYTHON SOURCE LINES 18-158
 
 
 
 .. image-sg:: /auto_examples/images/sphx_glr_plot_classifier_comparison_001.png
-   :alt: Input data, Decision Tree, Random Forest, Gradient BoostingNeural Net
+   :alt: Input data, Nearest Neighbors, Linear SVM, Gaussian Process, Decision Tree, DP Decision Tree, XG BoostRandom Forest, Neural Net, Naive Bayes
    :srcset: /auto_examples/images/sphx_glr_plot_classifier_comparison_001.png
    :class: sphx-glr-single-img
 
@@ -60,23 +60,36 @@ set.
 
     from sklearn.datasets import make_circles, make_classification, make_moons
     from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+    from sklearn.gaussian_process import GaussianProcessClassifier
+    from sklearn.gaussian_process.kernels import RBF
     from sklearn.inspection import DecisionBoundaryDisplay
     from sklearn.model_selection import train_test_split
+    from sklearn.naive_bayes import GaussianNB
+    from sklearn.neighbors import KNeighborsClassifier
     from sklearn.neural_network import MLPClassifier
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler
+    from sklearn.svm import SVC
     from sklearn.tree import DecisionTreeClassifier
 
     from dpdt import DPDTreeClassifier
 
     names = [
+        "Nearest Neighbors",
+        "Linear SVM",
+        "Gaussian Process",
         "Decision Tree",
+        "DP Decision Tree",
+        "XG Boost"
         "Random Forest",
-        "Gradient Boosting"
         "Neural Net",
+        "Naive Bayes",
     ]
 
     classifiers = [
+        KNeighborsClassifier(3),
+        SVC(kernel="linear", C=0.025, random_state=42),
+        GaussianProcessClassifier(1.0 * RBF(1.0), random_state=42),
         DecisionTreeClassifier(max_depth=5, random_state=42),
         DPDTreeClassifier(max_depth=5, random_state=42),
         GradientBoostingClassifier(
@@ -86,6 +99,7 @@ set.
             max_depth=5, n_estimators=10, max_features=1, random_state=42
         ),
         MLPClassifier(alpha=1, max_iter=1000, random_state=42),
+        GaussianNB(),
     ]
 
     X, y = make_classification(
@@ -101,10 +115,10 @@ set.
         linearly_separable,
     ]
 
-    figure = plt.figure(figsize=(27, 9))
-    i = 1
+    figure = plt.figure(figsize=(23,9))
     # iterate over datasets
     for ds_cnt, ds in enumerate(datasets):
+        i = ds_cnt * (len(classifiers) + 1) + 1  # Reset i for each dataset
         # preprocess dataset, split into training and test part
         X, y = ds
         X_train, X_test, y_train, y_test = train_test_split(
@@ -178,7 +192,7 @@ set.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.992 seconds)
+   **Total running time of the script:** (0 minutes 2.143 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_classifier_comparison.py:
