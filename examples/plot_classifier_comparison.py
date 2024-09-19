@@ -24,7 +24,6 @@ set.
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
-
 from sklearn.datasets import make_circles, make_classification, make_moons
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.gaussian_process import GaussianProcessClassifier
@@ -47,8 +46,7 @@ names = [
     "Gaussian Process",
     "Decision Tree",
     "DP Decision Tree",
-    "XG Boost"
-    "Random Forest",
+    "XG BoostRandom Forest",
     "Neural Net",
     "Naive Bayes",
 ]
@@ -82,7 +80,7 @@ datasets = [
     linearly_separable,
 ]
 
-figure = plt.figure(figsize=(23,9))
+figure = plt.figure(figsize=(23, 9))
 # iterate over datasets
 for ds_cnt, ds in enumerate(datasets):
     i = ds_cnt * (len(classifiers) + 1) + 1  # Reset i for each dataset
