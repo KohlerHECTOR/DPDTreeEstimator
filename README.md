@@ -7,4 +7,7 @@ Dynamic Programming Decision Trees
 
 
 ### A new tree-based estimator.
+### A pathological classification problem for trees.
+![Pathological Problem](examples/patho_bounds_comparison.png)
+### Comparison of different classifiers.
 ![Classifier Comparison](examples/compare_classif.png)
