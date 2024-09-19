@@ -27,23 +27,36 @@ from matplotlib.colors import ListedColormap
 
 from sklearn.datasets import make_circles, make_classification, make_moons
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
 from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
 from dpdt import DPDTreeClassifier
 
 names = [
+    "Nearest Neighbors",
+    "Linear SVM",
+    "Gaussian Process",
     "Decision Tree",
+    "DP Decision Tree",
+    "XG Boost"
     "Random Forest",
-    "Gradient Boosting"
     "Neural Net",
+    "Naive Bayes",
 ]
 
 classifiers = [
+    KNeighborsClassifier(3),
+    SVC(kernel="linear", C=0.025, random_state=42),
+    GaussianProcessClassifier(1.0 * RBF(1.0), random_state=42),
     DecisionTreeClassifier(max_depth=5, random_state=42),
     DPDTreeClassifier(max_depth=5, random_state=42),
     GradientBoostingClassifier(
@@ -53,6 +66,7 @@ classifiers = [
         max_depth=5, n_estimators=10, max_features=1, random_state=42
     ),
     MLPClassifier(alpha=1, max_iter=1000, random_state=42),
+    GaussianNB(),
 ]
 
 X, y = make_classification(
@@ -68,10 +82,10 @@ datasets = [
     linearly_separable,
 ]
 
-figure = plt.figure(figsize=(27, 9))
-i = 1
+figure = plt.figure(figsize=(23,9))
 # iterate over datasets
 for ds_cnt, ds in enumerate(datasets):
+    i = ds_cnt * (len(classifiers) + 1) + 1  # Reset i for each dataset
     # preprocess dataset, split into training and test part
     X, y = ds
     X_train, X_test, y_train, y_test = train_test_split(
