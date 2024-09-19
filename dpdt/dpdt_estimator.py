@@ -323,9 +323,11 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
         if rstar < 0 and depth < self.max_depth:
             clf = DecisionTreeClassifier(
-                max_leaf_nodes=max(2, self.cart_nodes_list[depth])
-                if depth < len(self.cart_nodes_list)
-                else 2,
+                max_leaf_nodes=(
+                    max(2, self.cart_nodes_list[depth])
+                    if depth < len(self.cart_nodes_list)
+                    else 2
+                ),
                 random_state=self.random_state,
             )
             clf.fit(self.X_[node.nz], self.y_[node.nz])
@@ -350,9 +352,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             next_obs_left[
                 np.arange(len(feat_thresh)), self.X_.shape[1] + valid_features
             ] = valid_thresholds
-            next_obs_right[
-                np.arange(len(feat_thresh)), valid_features
-            ] = valid_thresholds
+            next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
+                valid_thresholds
+            )
 
             act_max = (
                 2 * self.cart_nodes_list[depth + 1]
