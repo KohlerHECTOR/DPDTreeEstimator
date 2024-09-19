@@ -79,11 +79,11 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
     ----------
     max_depth : int
         The maximum depth of the tree.
-    max_nb_trees : int, default=1000
+    max_nb_trees : int, default=100
         The maximum number of trees.
     random_state : int, default=42
         Fixes randomness of the classifier. Randomness happens in the calls to cart.
-    cart_nodes_list : list of int, default=(3,)
+    cart_nodes_list : list of int, default=(32,)
         List containing the number of leaf nodes for the CART trees at each depth.
     n_jobs : int, default=None
         The number of jobs to run in parallel.
