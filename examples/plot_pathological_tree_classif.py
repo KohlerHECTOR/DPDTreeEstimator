@@ -1,3 +1,10 @@
+"""
+============================
+A Pathological Dataset
+============================
+A Dataset where the base :class:`sklearn.tree.DecisionTreeClassifier` fails.
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
