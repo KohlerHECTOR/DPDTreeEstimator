@@ -181,7 +181,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 dtype=np.float64,
             ),
             nz=np.ones(self.X_.shape[0], dtype=bool),
-            max_action_nb=2 * self.cart_nodes_list[0],
+            max_action_nb=2 * self.cart_nodes_list[0] + 1,
         )
 
         self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float64)
@@ -363,11 +363,11 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             )
 
             next_states_left = [
-                State(obs, nz, max_action_nb=act_max + len(classes))
+                State(obs, nz, max_action_nb=act_max + 1)
                 for obs, nz in zip(next_obs_left, lefts.T)
             ]
             next_states_right = [
-                State(obs, nz, max_action_nb=act_max + len(classes))
+                State(obs, nz, max_action_nb=act_max + 1)
                 for obs, nz in zip(next_obs_right, rights.T)
             ]
 
