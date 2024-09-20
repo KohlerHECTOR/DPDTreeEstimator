@@ -44,8 +44,6 @@ def benchmark(results_folder, dpdt_kwargs, nb_seed=3):
                 lengths,
             )
 
-
-if __name__ == "__main__":
-    results_folder = "dpdt_depth_5_K5"
-    dpdt_kwargs = dict(max_depth=5, cart_nodes_list=(16,) * 5, n_jobs="best")
-    benchmark(results_folder, dpdt_kwargs)
+results_folder = "dpdt_depth_5_K5"
+dpdt_kwargs = dict(max_depth=5, cart_nodes_list=(16,) * 5, n_jobs="best")
+benchmark(results_folder, dpdt_kwargs)
