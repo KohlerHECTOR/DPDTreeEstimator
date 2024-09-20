@@ -71,7 +71,6 @@ def get_pareto_front_cart(clf_kwargs, X_train, y_train, X_test, y_test):
     scores = []
     lengths = []
     for ccp_alpha in ccp_alphas:
-        print(ccp_alpha)
         clf = DecisionTreeClassifier(ccp_alpha=ccp_alpha, **clf_kwargs)
         clf.fit(X_train, y_train)
         scores.append(clf.score(X_test, y_test))
