@@ -23,7 +23,7 @@ Benchmarking DPDT
 ============================
 Benchmarking DPDT using datasets from https://arxiv.org/abs/2207.08815.
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-131
+.. GENERATED FROM PYTHON SOURCE LINES 7-130
 
 
 
@@ -38,391 +38,150 @@ Benchmarking DPDT using datasets from https://arxiv.org/abs/2207.08815.
  .. code-block:: none
 
     No permission to create OpenML directory at /home/runner/.config! This can result in OpenML-Python not working properly.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103185/credit.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103245/electricity.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103246/covertype.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103247/pol.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103248/house_16H.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103250/MagicTelescope.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103251/bank-marketing.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103253/MiniBooNE.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103254/Higgs.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22103255/eye_movements.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22111908/Diabetes130US.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22111907/jannis.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22111906/default-of-credit-card-clients.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22111905/Bioresponse.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22111914/california.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:124: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_dpdt = benchmark(DPDTreeClassifier, dpdt_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
     WARNING:root:Received uncompressed content from OpenML for https://api.openml.org/data/v1/download/22111912/heloc.arff.
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0001018231341948124
-    0.0001784333581557624
-    0.00017949024769654183
-    0.00029377547168055185
-    0.0003005850680979673
-    0.0003105286250207305
-    0.0010811452400698515
-    0.002574338388742388
-    0.0033463209816238515
-    0.005065282157141082
-    0.011498027297016544
-    0.012147045453704625
-    0.01724229493823462
-    0.02140888608295871
-    0.09394086365775972
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.00019413545282715577
-    0.00023949747561929653
-    0.0006786226309858229
-    0.0008229588662019612
-    0.0008257107796509622
-    0.0011053936985856699
-    0.0015273401193123606
-    0.0020456407232815783
-    0.0026088755745276027
-    0.007202018369291394
-    0.008322324634441242
-    0.014197815897052907
-    0.018033456430382178
-    0.12240036726141418
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    7.03055973794572e-05
-    0.00016782992781314747
-    0.00025147609240084353
-    0.000641093776131277
-    0.0007557753321777924
-    0.002263164291659542
-    0.00262687685864027
-    0.002769067742684511
-    0.0028705271952916764
-    0.004800053106965144
-    0.006027769219830337
-    0.006596878655763777
-    0.05008121784429018
-    0.0627017745735226
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    8.974593599451574e-06
-    0.00020092071360643528
-    0.00038205235586707503
-    0.00038624189927262235
-    0.0013341579440742774
-    0.0015044391977073399
-    0.001570970919128568
-    0.003960575807247048
-    0.006270708651043549
-    0.013211741967067772
-    0.039745192826536074
-    0.06633878467896039
-    0.12737012652233848
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0009007841829420382
-    0.0018330799508537166
-    0.00207486412217415
-    0.003191299128619006
-    0.0033197225695243276
-    0.004218890069983685
-    0.005946175417780822
-    0.006212296134130921
-    0.006495205422388253
-    0.006975255796413827
-    0.017508897613104382
-    0.020228294652393786
-    0.020822926366236894
-    0.038191518792279416
-    0.1033684950651701
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0004272043745727956
-    0.0005252783569068028
-    0.0005699472014913942
-    0.000840423270613871
-    0.0024327242484249723
-    0.002453125524951633
-    0.0034318772193506486
-    0.004792687330410356
-    0.009401317710521717
-    0.009758038266948377
-    0.024480523290740352
-    0.03842559684417271
-    0.10626896514240203
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.00027552687224743043
-    0.00030914385799470437
-    0.0006344237269113942
-    0.0007828124678478402
-    0.0012802502190956133
-    0.0027350394996784044
-    0.003400570876843423
-    0.004017596361267202
-    0.005783009420865459
-    0.008123169682589096
-    0.009353716067083212
-    0.012087256743862795
-    0.01259538135334233
-    0.026671944876743597
-    0.10185495591303217
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0002089220211833366
-    0.0011739370907859316
-    0.0020808832147130255
-    0.0027650375661881915
-    0.0030674543442393287
-    0.003364859513281016
-    0.005033416023992959
-    0.005800936335688685
-    0.010056809400805493
-    0.011833440527834152
-    0.016388157212307367
-    0.032510376971138344
-    0.032532235678663896
-    0.1816963366306647
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0001936489136660051
-    0.0004117812914057051
-    0.0006536049559177637
-    0.001123123104468396
-    0.0018245227256646589
-    0.001871110593233631
-    0.0020885184111000127
-    0.002117761411502779
-    0.0023493388020342787
-    0.0030915479704306803
-    0.007921761895885115
-    0.014814897645152703
-    0.023831298456190253
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0007622265520298563
-    0.0014691581430845702
-    0.0014801694584288677
-    0.0015637457216109221
-    0.0017073593782896551
-    0.0017404851578254835
-    0.0019266691332561203
-    0.002009494069169282
-    0.0024177959675220073
-    0.00380544674027819
-    0.005653977361511464
-    0.007402562778874577
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    5.924848540849077e-05
-    0.00013218222209692744
-    0.00021111103957515906
-    0.0002476878197755078
-    0.0002729324954218043
-    0.00028811282522958614
-    0.0002990871317568658
-    0.0003323456944131706
-    0.0004560451970860302
-    0.000490439863415501
-    0.0010807783459563791
-    0.0016905225484192266
-    0.0021089269560621016
-    0.0035119873067170904
-    0.019055160959364326
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0008366898119179112
-    0.001262015299550185
-    0.0016983225264059452
-    0.001877912874737972
-    0.0022925033603511183
-    0.0026044447000320853
-    0.002720151425944367
-    0.003000863644490523
-    0.0035138155787066555
-    0.004206459677289678
-    0.00602144824875811
-    0.013661201347229063
-    0.020242918196756526
-    0.024753999402257143
-    0.052503837201485604
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.00035094159866271013
-    0.00041003465116972414
-    0.0004859293375441033
-    0.0008332931477857582
-    0.0009737928230523218
-    0.0010933465733819411
-    0.0014666162466739768
-    0.002286273745925646
-    0.002472917671723973
-    0.003266464352394971
-    0.00837500351516457
-    0.009683916526575465
-    0.009813403996686218
-    0.07529137733763713
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0017448888963917711
-    0.0032332933173269476
-    0.0032443368175826756
-    0.0037653801662564518
-    0.003958766917415721
-    0.004661378584065748
-    0.004779361797416542
-    0.005263511080002989
-    0.007478973987265686
-    0.009128866248552553
-    0.010654765835921093
-    0.011815535133086391
-    0.03566760691010423
-    0.041676091419866446
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0005470112679193586
-    0.0016859288815912407
-    0.002022346584438235
-    0.0030608252705111583
-    0.0031969049845299857
-    0.004160103656231193
-    0.004708313251256875
-    0.00574673078388746
-    0.0082462888740686
-    0.008840965129044039
-    0.012669029465850981
-    0.01595137656331297
-    0.01630794058797752
-    0.12710947362925717
-    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:126: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
+    /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/examples/plot_model_selection.py:125: FutureWarning: Starting from Version 0.15.0 `download_splits` will default to ``False`` instead of ``True`` and be independent from `download_data`. To disable this message until version 0.15 explicitly set `download_splits` to a bool.
       res_cart = benchmark(DecisionTreeClassifier, cart_kwargs)
     /home/runner/work/DPDTreeEstimator/DPDTreeEstimator/.pixi/envs/doc/lib/python3.12/site-packages/openml/tasks/task.py:150: FutureWarning: Starting from Version 0.15 `download_data`, `download_qualities`, and `download_features_meta_data` will all be ``False`` instead of ``True`` by default to enable lazy loading. To disable this message until version 0.15 explicitly set `download_data`, `download_qualities`, and `download_features_meta_data` to a bool while calling `get_dataset`.
       return datasets.get_dataset(self.dataset_id)
-    0.0
-    0.0003438095238095239
-    0.0008557763975155265
-    0.0010960921882288456
-    0.0011037101574185929
-    0.001198903844641372
-    0.002108068963698667
-    0.002285312000381151
-    0.0024415696308618118
-    0.002735382227015748
-    0.0027355485914659916
-    0.005204647358842893
-    0.0054214344795922575
-    0.005502635648729187
-    0.013363303585037872
-    0.07496870847905546
 
 
 
@@ -500,7 +259,6 @@ Benchmarking DPDT using datasets from https://arxiv.org/abs/2207.08815.
         scores = []
         lengths = []
         for ccp_alpha in ccp_alphas:
-            print(ccp_alpha)
             clf = DecisionTreeClassifier(ccp_alpha=ccp_alpha, **clf_kwargs)
             clf.fit(X_train, y_train)
             scores.append(clf.score(X_test, y_test))
@@ -561,7 +319,7 @@ Benchmarking DPDT using datasets from https://arxiv.org/abs/2207.08815.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (22 minutes 58.231 seconds)
+   **Total running time of the script:** (23 minutes 8.152 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_model_selection.py:
