@@ -11,3 +11,5 @@ Dynamic Programming Decision Trees
 ![Pathological Problem](examples/patho_bounds_comparison.png)
 ### Comparison of different classifiers.
 ![Classifier Comparison](examples/compare_classif.png)
+### Benchmarking against CART on hard tasks.
+![Benchmarking](examples/benchmark_classif.png)
