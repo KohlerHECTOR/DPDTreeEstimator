@@ -11,5 +11,9 @@ from dpdt import DPDTreeClassifier, DPDTreeRegressor
 @pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 5, 4, 1), (6, 6)])
 @pytest.mark.parametrize("n_jobs", [None, 3, "best"])
 def test_check_estimator(max_depth, max_nb_trees, cart_nodes_list, n_jobs):
-    check_estimator(DPDTreeClassifier(max_depth, max_nb_trees, cart_nodes_list, n_jobs=n_jobs))
-    check_estimator(DPDTreeRegressor(max_depth, max_nb_trees, cart_nodes_list, n_jobs=n_jobs))
+    check_estimator(
+        DPDTreeClassifier(max_depth, max_nb_trees, cart_nodes_list, n_jobs=n_jobs)
+    )
+    check_estimator(
+        DPDTreeRegressor(max_depth, max_nb_trees, cart_nodes_list, n_jobs=n_jobs)
+    )

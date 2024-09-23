@@ -415,7 +415,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             The average number of decision nodes traversed.
         """
         init_a = self._trees[tuple(self._root.obs.tolist() + [0])][zeta_index]
-        if self.y_.ndim>1:
+        if self.y_.ndim > 1:
             y_pred = np.zeros((len(X), self.y_.shape[1]), dtype=self.y_.dtype)
         else:
             y_pred = np.zeros((len(X)), dtype=self.y_.dtype)
