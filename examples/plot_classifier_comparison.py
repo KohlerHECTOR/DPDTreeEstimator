@@ -46,7 +46,8 @@ names = [
     "Gaussian Process",
     "Decision Tree",
     "DP Decision Tree",
-    "XG BoostRandom Forest",
+    "XG Boost",
+    "Random Forest",
     "Neural Net",
     "Naive Bayes",
 ]
