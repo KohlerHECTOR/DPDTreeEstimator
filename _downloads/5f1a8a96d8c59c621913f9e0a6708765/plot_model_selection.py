@@ -78,7 +78,7 @@ def get_pareto_front_cart(clf_kwargs, X_train, y_train, X_test, y_test):
     return (scores, lengths)
 
 
-def benchmark(clf_cls, clf_kwargs):
+def benchmark(clf_cls, clf_kwargs, seed=42):
     benchmark_suite = openml.study.get_suite(337)  # obtain the benchmark suite
     res_dict = {}
     for _, task_id in enumerate(
@@ -95,7 +95,7 @@ def benchmark(clf_cls, clf_kwargs):
             dataset_format="dataframe", target=dataset.default_target_attribute
         )
         X_train, X_test, y_train, y_test = train_test_split(
-            X.to_numpy(), y.to_numpy(), test_size=0.5, random_state=42
+            X.to_numpy(), y.to_numpy(), test_size=0.5, random_state=seed
         )
 
         if clf_cls is DPDTreeClassifier:
