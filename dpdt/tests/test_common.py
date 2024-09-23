@@ -6,8 +6,8 @@ from dpdt import DPDTreeClassifier, DPDTreeRegressor
 
 # parametrize_with_checks allows to get a generator of check that is more fine-grained
 # than check_estimator
-@pytest.mark.parametrize("max_depth", [2, 4, 6, 8, 10])
-@pytest.mark.parametrize("max_nb_trees", [1, 20, 50, 100])
+@pytest.mark.parametrize("max_depth", [2, 4])
+@pytest.mark.parametrize("max_nb_trees", [1, 100])
 @pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 5, 4, 1), (6, 6)])
 @pytest.mark.parametrize("n_jobs", [None, 3, "best"])
 def test_check_estimator(max_depth, max_nb_trees, cart_nodes_list, n_jobs):

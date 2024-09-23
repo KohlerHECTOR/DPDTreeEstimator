@@ -104,6 +104,8 @@ def benchmark(clf_cls, clf_kwargs):
             clf.fit(X_train, y_train)
             scores, lengths = clf.get_pareto_front(X_test, y_test)
             end = time() - start
+            scores = scores.tolist()
+            lengths = lengths.tolist()
         elif clf_cls is DecisionTreeClassifier:
             start = time()
             scores, lengths = get_pareto_front_cart(

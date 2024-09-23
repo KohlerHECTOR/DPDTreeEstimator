@@ -127,7 +127,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         "max_nb_trees": [Interval(Integral, 1, None, closed="left")],
         "cart_nodes_list": ["array-like"],
         "random_state": [Interval(Integral, 0, None, closed="left")],
-        "n_jobs": [Integral, None, StrOptions({"best"})],
+        "n_jobs": [Interval(Integral, 1, None, closed="left"), None, StrOptions({"best"})],
     }
 
     def __init__(
@@ -219,7 +219,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
         # Process non-terminal states
         if self.n_jobs == "best":
-            n_jobs = len(depth_0[2:])
+            n_jobs = max(1, len(depth_0[2:]))
         else:
             n_jobs = self.n_jobs
 
@@ -457,7 +457,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         decision_path_length = np.zeros(len(self._zetas), dtype=np.float32)
 
         if self.n_jobs == "best":
-            n_jobs = len(self._zetas)
+            n_jobs = max(1, len(self._zetas))
         else:
             n_jobs = self.n_jobs
 
