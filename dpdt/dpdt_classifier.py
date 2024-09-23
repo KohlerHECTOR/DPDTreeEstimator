@@ -128,7 +128,11 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         "max_nb_trees": [Interval(Integral, 1, None, closed="left")],
         "cart_nodes_list": ["array-like"],
         "random_state": [Interval(Integral, 0, None, closed="left")],
-        "n_jobs": [Interval(Integral, 1, None, closed="left"), None, StrOptions({"best"})],
+        "n_jobs": [
+            Interval(Integral, 1, None, closed="left"),
+            None,
+            StrOptions({"best"}),
+        ],
     }
 
     def __init__(
