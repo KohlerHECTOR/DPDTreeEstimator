@@ -33,12 +33,12 @@ The plots show training points in solid colors and testing points
 semi-transparent. The lower right shows the classification accuracy on the test
 set.
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-156
+.. GENERATED FROM PYTHON SOURCE LINES 18-157
 
 
 
 .. image-sg:: /auto_examples/images/sphx_glr_plot_classifier_comparison_001.png
-   :alt: Input data, Nearest Neighbors, Linear SVM, Gaussian Process, Decision Tree, DP Decision Tree, XG BoostRandom Forest, Neural Net, Naive Bayes
+   :alt: Input data, Nearest Neighbors, Linear SVM, Gaussian Process, Decision Tree, DP Decision Tree, XG Boost, Random Forest, Neural Net, Naive Bayes
    :srcset: /auto_examples/images/sphx_glr_plot_classifier_comparison_001.png
    :class: sphx-glr-single-img
 
@@ -79,7 +79,8 @@ set.
         "Gaussian Process",
         "Decision Tree",
         "DP Decision Tree",
-        "XG BoostRandom Forest",
+        "XG Boost",
+        "Random Forest",
         "Neural Net",
         "Naive Bayes",
     ]
@@ -190,7 +191,7 @@ set.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.133 seconds)
+   **Total running time of the script:** (0 minutes 2.247 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_classifier_comparison.py:
