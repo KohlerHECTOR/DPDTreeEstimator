@@ -227,7 +227,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         else:
             n_jobs = self.n_jobs
 
-        results = Parallel(n_jobs=n_jobs, prefer="threads")(
+        results = Parallel(n_jobs=n_jobs, prefer="processes")(
             delayed(self._dfs)(deepcopy(root), deepcopy(s), depth=1)
             for s in depth_0[2:]
         )
@@ -467,7 +467,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
         results = Parallel(
             n_jobs=n_jobs,
-            prefer="threads",
+            prefer="processes",
         )(delayed(self._predict_zeta)(X, z) for z in range(len(self._zetas)))
 
         for z, pred_length in enumerate(results):
