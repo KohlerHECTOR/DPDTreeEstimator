@@ -16,7 +16,7 @@ from dpdt import DPDTreeClassifier
 
 def create_pathological_dataset(n_samples=1000):
     # Generate random points
-    X = np.random.rand(n_samples, 2)
+    X = np.random.default_rng(42).random((n_samples, 2))
     y = np.zeros(n_samples)
 
     # Define regions for class 1 (checkerboard pattern)
@@ -34,7 +34,7 @@ def create_pathological_dataset(n_samples=1000):
 
 
 # Create dataset
-x, y = create_pathological_dataset()
+x, y = create_pathological_dataset(10_000)
 
 # Create meshgrid
 feature_1, feature_2 = np.meshgrid(
@@ -57,9 +57,9 @@ ax1.set_xticks(())
 ax1.set_yticks(())
 
 # Plot 2: DecisionTreeClassifier
-tree = DecisionTreeClassifier(max_depth=3, random_state=42).fit(x, y)
+tree = DecisionTreeClassifier(max_depth=3, random_state=0).fit(x, y)
 DecisionBoundaryDisplay.from_estimator(tree, x, cmap=cm, alpha=0.8, ax=ax2, eps=0.5)
-ax2.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolors="k")
+# ax2.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolors="k", alpha=0.2)
 ax2.set_title("Decision Tree")
 ax2.set_xlim(0, 1)
 ax2.set_ylim(0, 1)
@@ -67,11 +67,11 @@ ax2.set_xticks(())
 ax2.set_yticks(())
 
 # Plot 3: DPDTreeClassifier
-dpd_tree = DPDTreeClassifier(max_depth=3, random_state=42, cart_nodes_list=(8,)).fit(
+dpd_tree = DPDTreeClassifier(max_depth=3, random_state=0, cart_nodes_list=(8,)).fit(
     x, y
 )
 DecisionBoundaryDisplay.from_estimator(dpd_tree, x, cmap=cm, alpha=0.8, ax=ax3, eps=0.5)
-ax3.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolors="k")
+# ax3.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolors="k", alpha=0.2)
 ax3.set_xlim(0, 1)
 ax3.set_ylim(0, 1)
 ax3.set_xticks(())
