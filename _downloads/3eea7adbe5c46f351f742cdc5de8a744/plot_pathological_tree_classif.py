@@ -64,7 +64,9 @@ end = time() - start
 score_ = tree.score(x, y)
 DecisionBoundaryDisplay.from_estimator(tree, x, cmap=cm, alpha=0.8, ax=ax2, eps=0.5)
 # ax2.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolors="k", alpha=0.2)
-ax2.set_title("Decision Tree\n Accuracy:{}%, Time: {}s".format(round(score_*100), round(end, 4)))
+ax2.set_title(
+    "Decision Tree\n Accuracy:{}%, Time: {}s".format(round(score_ * 100), round(end, 4))
+)
 ax2.set_xlim(0, 1)
 ax2.set_ylim(0, 1)
 ax2.set_xticks(())
@@ -83,7 +85,11 @@ ax3.set_xlim(0, 1)
 ax3.set_ylim(0, 1)
 ax3.set_xticks(())
 ax3.set_yticks(())
-ax3.set_title("DP Decision Tree\n Accuracy:{}%, Time: {}s".format(round(score_*100), round(end, 4)))
+ax3.set_title(
+    "DP Decision Tree\n Accuracy:{}%, Time: {}s".format(
+        round(score_ * 100), round(end, 4)
+    )
+)
 
 
 DecisionBoundaryDisplay.from_estimator(dpd_tree, x, cmap=cm, alpha=0.8, ax=ax4, eps=0.5)
