@@ -381,9 +381,9 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             next_obs_left[
                 np.arange(len(feat_thresh)), self.X_.shape[1] + valid_features
             ] = valid_thresholds
-            next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
-                valid_thresholds
-            )
+            next_obs_right[
+                np.arange(len(feat_thresh)), valid_features
+            ] = valid_thresholds
 
             act_max = (
                 2 * self.cart_nodes_list[depth + 1]
