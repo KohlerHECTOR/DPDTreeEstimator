@@ -379,7 +379,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
                 valid_thresholds
             )
-
             act_max = (
                 2 * self.cart_nodes_list[depth + 1]
                 if depth + 1 < len(self.cart_nodes_list)

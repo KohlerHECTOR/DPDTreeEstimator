@@ -181,6 +181,10 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
         if sample_weight is not None:
             self._sample_weight = _check_sample_weight(sample_weight, X)
+            if y.squeeze().ndim > 1:
+                raise AssertionError(
+                    "sample weights are not yet supported for multioutput predictions"
+                )
         else:
             self._sample_weight = np.ones(len(X), dtype=np.float32)
 
@@ -332,7 +336,10 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         State
             The expanded node.
         """
-        astar = (self.y_[node.nz] * self._sample_weight[node.nz]).mean(axis=0)
+        astar = np.average(
+            self.y_[node.nz], weights=self._sample_weight[node.nz], axis=0
+        )
+
         rstar = -1 * mean_squared_error(
             self.y_[node.nz],
             np.tile(astar, (len(self.y_[node.nz]), 1)),
