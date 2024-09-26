@@ -9,7 +9,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.parallel import Parallel, delayed
-from sklearn.utils.validation import _check_sample_weight, check_is_fitted
+from sklearn.utils.validation import check_is_fitted
 
 
 class State:
@@ -151,7 +151,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         self.n_jobs = n_jobs
 
     @_fit_context(prefer_skip_nested_validation=True)
-    def fit(self, X, y, sample_weight=None):
+    def fit(self, X, y):
         """Fit the DPDTreeClassifier to the training data.
 
         Parameters
@@ -160,12 +160,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             The training input samples.
         y : array-like, shape (n_samples,)
             The target values. An array of int.
-        sample_weight : array-like of shape (n_samples,), default=None
-            Sample weights. If None, then samples are equally weighted.
-            Splits that would create child nodes with net zero or
-            negative weight are ignored while searching for a split in each node.
-            Splits are also ignored if they would result in any single
-            class carrying a negative weight in either child node.
 
         Returns
         -------
@@ -174,11 +168,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         """
         X, y = self._validate_data(X, y)
         check_classification_targets(y)
-
-        if sample_weight is not None:
-            self._sample_weight = _check_sample_weight(sample_weight, X)
-        else:
-            self._sample_weight = np.ones(len(X), dtype=np.float32)
 
         self.classes_ = np.unique(y)
         self.X_ = X
@@ -193,7 +182,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         self._root = State(
             np.concatenate(
                 (self.X_.min(axis=0) - 1e-3, self.X_.max(axis=0) + 1e-3),
-                dtype=np.float64,
             ),
             nz=np.ones(self.X_.shape[0], dtype=bool),
             max_action_nb=2 * self.cart_nodes_list[0] + 1,
@@ -331,15 +319,8 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         """
 
         classes, counts = np.unique(self.y_[node.nz], return_counts=True)
-        weighted_counts = np.zeros_like(counts, dtype=np.float32)
-        for c_idx, c in enumerate(classes):
-            weighted_counts[c_idx] = (
-                self._sample_weight[node.nz][self.y_[node.nz] == c]
-            ).sum()
-
-        max_idx = np.argmax(weighted_counts)
-        rstar = weighted_counts[max_idx] / self._sample_weight[node.nz].sum() - 1.0
-        astar = classes[max_idx]
+        rstar = max(counts) / node.nz.sum() - 1.0
+        astar = classes[counts.argmax()]
         rew = np.full((2, self.max_nb_trees), rstar, dtype=np.float32)
 
         terminal_state = State(label=self._terminal_state, nz=[0], is_terminal=True)
@@ -354,7 +335,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 ),
                 random_state=self.random_state,
             )
-            clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
+            clf.fit(self.X_[node.nz], self.y_[node.nz])
 
             masks = clf.tree_.feature >= 0
             valid_features = clf.tree_.feature[masks]

@@ -106,22 +106,17 @@ def test_better_cart_gb(
     [2, 6],
 )
 @pytest.mark.parametrize("max_depth", [2, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (128,), (3, 5, 4, 1)])
+@pytest.mark.parametrize("cart_nodes_list", [(3,), (6, 6,)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
-@pytest.mark.parametrize("sw", [True, False])
 def test_better_cart(
-    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs, sw
+    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs
 ):
     X, y = make_blobs(n_samples, centers=centers, n_features=n_features, random_state=0)
     y = y.reshape(-1, 1)
     clf = DPDTreeClassifier(max_depth, cart_nodes_list=cart_nodes_list, n_jobs=n_jobs)
-    if sw:
-        sample_weight = np.random.default_rng(42).random(len(X))
-    else:
-        sample_weight = None
-    clf.fit(X, y, sample_weight)
+    clf.fit(X, y)
     cart = DecisionTreeClassifier(max_depth=max_depth, random_state=clf.random_state)
-    cart.fit(X, y, sample_weight)
+    cart.fit(X, y)
     assert clf.score(X, y) >= cart.score(X, y)
 
 
@@ -136,7 +131,7 @@ def test_better_cart(
 @pytest.mark.parametrize("max_depth", [2, 4])
 @pytest.mark.parametrize("max_nb_trees", [1, 100])
 @pytest.mark.parametrize("n_jobs", [None, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (128,), (3, 5, 4, 1)])
+@pytest.mark.parametrize("cart_nodes_list", [(3,), (128,), (3, 5,)])
 def test_dpdt_learning(
     n_samples, n_features, max_depth, max_nb_trees, cart_nodes_list, n_jobs
 ):
@@ -164,23 +159,18 @@ def test_dpdt_learning(
 @pytest.mark.parametrize("max_depth", [2, 4])
 @pytest.mark.parametrize("cart_nodes_list", [(3,)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
-@pytest.mark.parametrize("sw", [False])
 def test_better_cart_multiout(
-    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs, sw
+    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs
 ):
     X = np.random.random(size=(n_samples, n_features))
     y = [[x[0] ** i for i in range(centers)] for x in X]
-    if sw:
-        sample_weight = np.random.default_rng(42).random(len(X))
-    else:
-        sample_weight = None
     clf = DPDTreeRegressor(max_depth, cart_nodes_list=cart_nodes_list, n_jobs=n_jobs)
-    clf.fit(X, y, sample_weight)
+    clf.fit(X, y)
     cart = DecisionTreeRegressor(max_depth=max_depth, random_state=clf.random_state)
-    cart.fit(X, y, sample_weight)
+    cart.fit(X, y)
     dpdt_score = clf.score(X, y)
     cart_score = cart.score(X, y)
-    assert np.allclose(dpdt_score, cart_score, rtol=1e-1) or dpdt_score >= cart_score
+    assert np.allclose(dpdt_score, cart_score, rtol=1e-2) or dpdt_score >= cart_score
 
 
 @pytest.mark.parametrize(
@@ -198,21 +188,16 @@ def test_better_cart_multiout(
 @pytest.mark.parametrize("max_depth", [2, 4])
 @pytest.mark.parametrize("cart_nodes_list", [(3,), (6, 6)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
-@pytest.mark.parametrize("sw", [True, False])
 def test_better_cart_regress(
-    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs, sw
+    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs
 ):
     X = np.random.random(size=(n_samples, n_features))
     y = np.array([sum([x[0] ** i for i in range(centers)]) for x in X])
     y = y.reshape(-1, 1)
-    if sw:
-        sample_weight = np.random.default_rng(42).random(len(X))
-    else:
-        sample_weight = None
     clf = DPDTreeRegressor(max_depth, cart_nodes_list=cart_nodes_list, n_jobs=n_jobs)
-    clf.fit(X, y, sample_weight)
+    clf.fit(X, y)
     cart = DecisionTreeRegressor(max_depth=max_depth, random_state=clf.random_state)
-    cart.fit(X, y, sample_weight)
+    cart.fit(X, y)
     dpdt_score = clf.score(X, y)
     cart_score = cart.score(X, y)
     assert np.allclose(dpdt_score, cart_score, rtol=1e-3) or dpdt_score >= cart_score
