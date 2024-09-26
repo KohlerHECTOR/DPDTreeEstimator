@@ -12,24 +12,35 @@ from sklearn.dummy import DummyClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
-from dpdt import GradientBoostingDPDTClassifier, DPDTreeClassifier
+from dpdt import DPDTreeClassifier, GradientBoostingDPDTClassifier
 
-X_train = np.load("eye_movements_data/eye_movements_seed_0_x_train.npy", allow_pickle=True)
-y_train = np.load("eye_movements_data/eye_movements_seed_0_y_train.npy", allow_pickle=True)
-X_test = np.load("eye_movements_data/eye_movements_seed_0_x_test.npy", allow_pickle=True)
-y_test = np.load("eye_movements_data/eye_movements_seed_0_y_test.npy", allow_pickle=True)
+X_train = np.load(
+    "eye_movements_data/eye_movements_seed_0_x_train.npy", allow_pickle=True
+)
+y_train = np.load(
+    "eye_movements_data/eye_movements_seed_0_y_train.npy", allow_pickle=True
+)
+X_test = np.load(
+    "eye_movements_data/eye_movements_seed_0_x_test.npy", allow_pickle=True
+)
+y_test = np.load(
+    "eye_movements_data/eye_movements_seed_0_y_test.npy", allow_pickle=True
+)
 
-n_estimators=50
+n_estimators = 50
 weak_cart = DecisionTreeClassifier(max_depth=3, random_state=42)
 weak_dpdt = DPDTreeClassifier(max_depth=3)
 gb_dpdt = GradientBoostingDPDTClassifier(n_estimators=n_estimators, n_jobs="best")
-gb_cart = GradientBoostingDPDTClassifier(n_estimators=n_estimators, n_jobs="best", use_default_dt=True)
+gb_cart = GradientBoostingDPDTClassifier(
+    n_estimators=n_estimators, n_jobs="best", use_default_dt=True
+)
 
 gb_dpdt.fit(X_train, y_train)
 gb_cart.fit(X_train, y_train)
 
 
 dummy_clf = DummyClassifier()
+
 
 def misclassification_error(y_true, y_pred):
     return 1 - accuracy_score(y_true, y_pred)
@@ -72,7 +83,7 @@ plt.plot(
     [
         misclassification_error(y_test, y_pred)
         for y_pred in gb_cart.staged_predict(X_test)
-    ]
+    ],
 )
 
 plt.plot(
@@ -91,4 +102,3 @@ plt.plot(
 
 plt.legend(["GB-DPDT", "GB-CART", "DecisionTreeClassifier", "DPDTreeClassifier"], loc=1)
 plt.savefig("gb_boosting_eye_movements")
-

@@ -23,6 +23,7 @@ def test_dpdt_classifier(data):
     y_pred = clf.predict(X)
     assert y_pred.shape == (X.shape[0],)
 
+
 def test_gb_dpdt_classifier(data):
     """Check the internals and behaviour of `DPDTreeClassifier`."""
     X, y = data
@@ -49,18 +50,45 @@ def test_gb_dpdt_classifier(data):
     [2, 6],
 )
 @pytest.mark.parametrize("max_depth", [3, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 3, )])
+@pytest.mark.parametrize(
+    "cart_nodes_list",
+    [
+        (3,),
+        (
+            3,
+            3,
+        ),
+    ],
+)
 @pytest.mark.parametrize("n_jobs", [None, 4])
 @pytest.mark.parametrize("n_estimators", [5, 7])
 @pytest.mark.parametrize("n_jobs_dpdt", [None, 4])
 def test_better_cart_gb(
-    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs, n_estimators, n_jobs_dpdt
+    n_samples,
+    n_features,
+    centers,
+    max_depth,
+    cart_nodes_list,
+    n_jobs,
+    n_estimators,
+    n_jobs_dpdt,
 ):
     X, y = make_blobs(n_samples, centers=centers, n_features=n_features, random_state=0)
     y = y.reshape(-1, 1)
-    clf = GradientBoostingDPDTClassifier(n_estimators=n_estimators, max_depth=max_depth, cart_nodes_list=cart_nodes_list, n_jobs=n_jobs, n_jobs_dpdt=n_jobs_dpdt)
+    clf = GradientBoostingDPDTClassifier(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        cart_nodes_list=cart_nodes_list,
+        n_jobs=n_jobs,
+        n_jobs_dpdt=n_jobs_dpdt,
+    )
     clf.fit(X, y)
-    cart = GradientBoostingDPDTClassifier(n_estimators=n_estimators, max_depth=max_depth, use_default_dt=True, n_jobs=n_jobs)
+    cart = GradientBoostingDPDTClassifier(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        use_default_dt=True,
+        n_jobs=n_jobs,
+    )
     cart.fit(X, y)
     assert clf.score(X, y) >= cart.score(X, y)
 

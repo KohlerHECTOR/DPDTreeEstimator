@@ -6,9 +6,9 @@ from scipy.special import softmax
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.utils._param_validation import Interval, StrOptions
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.parallel import Parallel, delayed
+from sklearn.utils.validation import check_array, check_is_fitted
 
 from .dpdt_regressor import DPDTreeRegressor
 
