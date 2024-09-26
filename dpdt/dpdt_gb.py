@@ -71,7 +71,7 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         n_estimators=100,
         learning_rate=0.1,
         max_depth=3,
-        cart_nodes_list=(16,),
+        cart_nodes_list=(32,),
         random_state=42,
         use_default_dt=False,
         n_jobs=None,
