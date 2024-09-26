@@ -116,7 +116,7 @@ def test_better_cart_multiout(
 @pytest.mark.parametrize("max_depth", [2, 4])
 @pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 5, 4, 1), (6, 6)])
 @pytest.mark.parametrize("n_jobs", [None, 3, "best"])
-def test_better_cart_classif(
+def test_better_cart_reg(
     n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs
 ):
     X = np.random.random(size=(n_samples, n_features))
@@ -128,4 +128,4 @@ def test_better_cart_classif(
     cart.fit(X, y)
     dpdt_score = clf.score(X, y)
     cart_score = cart.score(X, y)
-    assert np.allclose(dpdt_score, cart_score, rtol=1e-2) or dpdt_score >= cart_score
+    assert np.allclose(dpdt_score, cart_score, rtol=1e-3) or dpdt_score >= cart_score
