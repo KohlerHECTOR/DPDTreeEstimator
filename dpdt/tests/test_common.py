@@ -1,7 +1,7 @@
 import pytest
 from sklearn.utils.estimator_checks import check_estimator
 
-from dpdt import DPDTreeClassifier, GradientBoostingDPDTClassifier, DPDTreeRegressor
+from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassifier
 
 
 # parametrize_with_checks allows to get a generator of check that is more fine-grained

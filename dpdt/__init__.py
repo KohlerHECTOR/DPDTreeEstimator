@@ -8,6 +8,7 @@ from .dpdt_regressor import DPDTreeRegressor
 
 __all__ = [
     "DPDTreeClassifier",
-    "GradientBoostingDPDTClassifierDPDTreeRegressor",
+    "DPDTreeRegressor",
+    "GradientBoostingDPDTClassifier",
     "__version__",
 ]

@@ -4,6 +4,7 @@ from numbers import Integral, Real
 import numpy as np
 from scipy.special import softmax
 from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import check_classification_targets
@@ -52,7 +53,13 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         "max_depth": [Interval(Integral, 2, None, closed="left")],
         "cart_nodes_list": ["array-like"],
         "random_state": [Interval(Integral, 0, None, closed="left")],
+        "use_default_dt": ["boolean"],
         "n_jobs": [
+            Interval(Integral, 1, None, closed="left"),
+            None,
+            StrOptions({"best"}),
+        ],
+        "n_jobs_dpdt": [
             Interval(Integral, 1, None, closed="left"),
             None,
             StrOptions({"best"}),
@@ -66,21 +73,33 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         max_depth=3,
         cart_nodes_list=(16,),
         random_state=42,
+        use_default_dt=False,
         n_jobs=None,
+        n_jobs_dpdt=None,
     ):
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate
         self.max_depth = max_depth
         self.cart_nodes_list = cart_nodes_list
         self.random_state = random_state
+        self.use_default_dt = use_default_dt
         self.n_jobs = n_jobs
+        self.n_jobs_dpdt = n_jobs_dpdt
 
     def _fit_tree(self, X, gradients, class_idx):
-        tree = DPDTreeRegressor(
-            max_depth=self.max_depth,
-            cart_nodes_list=self.cart_nodes_list,
-            random_state=self.random_state,
-        )
+        if self.use_default_dt:
+            tree = DecisionTreeRegressor(
+                max_depth=self.max_depth,
+                random_state=self.random_state,
+            )
+        else:
+            tree = DPDTreeRegressor(
+                max_depth=self.max_depth,
+                cart_nodes_list=self.cart_nodes_list,
+                random_state=self.random_state,
+                max_nb_trees=1,
+                n_jobs=self.n_jobs_dpdt,
+            )
         tree.fit(X, -gradients[:, class_idx])  # Note the negative sign
         return tree
 
@@ -100,10 +119,12 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         self : object
             Returns self.
         """
-        X, y = check_X_y(X, y)
+        X, y = self._validate_data(X, y)
         check_classification_targets(y)
 
         self.classes_ = np.unique(y)
+        self.X_ = X
+        self.y_ = y
         self.n_classes_ = len(self.classes_)
 
         # Convert y to one-hot encoding
@@ -186,3 +207,31 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         """
         probas = self.predict_proba(X)
         return self.classes_[np.argmax(probas, axis=1)]
+
+    def staged_predict(self, X):
+        """
+        Predict class labels at each stage for X.
+
+        This method allows monitoring (i.e. determine error on testing set)
+        after each stage.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The input samples.
+
+        Yields
+        ------
+        y : ndarray of shape (n_samples,)
+            The predicted class labels at each stage.
+        """
+        check_is_fitted(self)
+        X = check_array(X)
+
+        decision = np.tile(self.initial_predictions_, (X.shape[0], 1))
+        # yield self.classes_[np.argmax(softmax(decision, axis=1), axis=1)]
+
+        for trees in self.estimators_:
+            for class_idx, tree in enumerate(trees):
+                decision[:, class_idx] += self.learning_rate * tree.predict(X)
+            yield self.classes_[np.argmax(softmax(decision, axis=1), axis=1)]

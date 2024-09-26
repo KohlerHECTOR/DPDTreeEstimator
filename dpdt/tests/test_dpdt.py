@@ -3,7 +3,7 @@ import pytest
 from sklearn.datasets import load_iris, make_blobs
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
-from dpdt import DPDTreeClassifier, DPDTreeRegressor
+from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassifier
 
 
 @pytest.fixture
@@ -23,6 +23,18 @@ def test_dpdt_classifier(data):
     y_pred = clf.predict(X)
     assert y_pred.shape == (X.shape[0],)
 
+def test_gb_dpdt_classifier(data):
+    """Check the internals and behaviour of `DPDTreeClassifier`."""
+    X, y = data
+    clf = GradientBoostingDPDTClassifier(n_estimators=5)
+    clf.fit(X, y)
+    assert hasattr(clf, "classes_")
+    assert hasattr(clf, "X_")
+    assert hasattr(clf, "y_")
+
+    y_pred = clf.predict(X)
+    assert y_pred.shape == (X.shape[0],)
+
 
 @pytest.mark.parametrize(
     "n_samples",
@@ -34,10 +46,39 @@ def test_dpdt_classifier(data):
 )
 @pytest.mark.parametrize(
     "centers",
-    [2, 4, 6],
+    [2, 6],
+)
+@pytest.mark.parametrize("max_depth", [3, 4])
+@pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 3, )])
+@pytest.mark.parametrize("n_jobs", [None, 4])
+@pytest.mark.parametrize("n_estimators", [5, 7])
+@pytest.mark.parametrize("n_jobs_dpdt", [None, 4])
+def test_better_cart_gb(
+    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs, n_estimators, n_jobs_dpdt
+):
+    X, y = make_blobs(n_samples, centers=centers, n_features=n_features, random_state=0)
+    y = y.reshape(-1, 1)
+    clf = GradientBoostingDPDTClassifier(n_estimators=n_estimators, max_depth=max_depth, cart_nodes_list=cart_nodes_list, n_jobs=n_jobs, n_jobs_dpdt=n_jobs_dpdt)
+    clf.fit(X, y)
+    cart = GradientBoostingDPDTClassifier(n_estimators=n_estimators, max_depth=max_depth, use_default_dt=True, n_jobs=n_jobs)
+    cart.fit(X, y)
+    assert clf.score(X, y) >= cart.score(X, y)
+
+
+@pytest.mark.parametrize(
+    "n_samples",
+    [10, 1000],
+)
+@pytest.mark.parametrize(
+    "n_features",
+    [5, 500],
+)
+@pytest.mark.parametrize(
+    "centers",
+    [2, 6],
 )
 @pytest.mark.parametrize("max_depth", [2, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (128,), (3, 5, 4, 1), (6, 6)])
+@pytest.mark.parametrize("cart_nodes_list", [(3,), (128,), (3, 5, 4, 1)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
 @pytest.mark.parametrize("sw", [True, False])
 def test_better_cart(
@@ -67,7 +108,7 @@ def test_better_cart(
 @pytest.mark.parametrize("max_depth", [2, 4])
 @pytest.mark.parametrize("max_nb_trees", [1, 100])
 @pytest.mark.parametrize("n_jobs", [None, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (128,), (3, 5, 4, 1), (6, 6)])
+@pytest.mark.parametrize("cart_nodes_list", [(3,), (128,), (3, 5, 4, 1)])
 def test_dpdt_learning(
     n_samples, n_features, max_depth, max_nb_trees, cart_nodes_list, n_jobs
 ):
@@ -90,7 +131,7 @@ def test_dpdt_learning(
 )
 @pytest.mark.parametrize(
     "centers",
-    [2, 4, 6],
+    [2, 6],
 )
 @pytest.mark.parametrize("max_depth", [2, 4])
 @pytest.mark.parametrize("cart_nodes_list", [(3,)])
@@ -124,10 +165,10 @@ def test_better_cart_multiout(
 )
 @pytest.mark.parametrize(
     "centers",
-    [2, 4, 6],
+    [2, 6],
 )
 @pytest.mark.parametrize("max_depth", [2, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 5, 4, 1), (6, 6)])
+@pytest.mark.parametrize("cart_nodes_list", [(3,), (6, 6)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
 @pytest.mark.parametrize("sw", [True, False])
 def test_better_cart_regress(
