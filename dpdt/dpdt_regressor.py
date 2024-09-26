@@ -184,7 +184,6 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         self._root = State(
             np.concatenate(
                 (self.X_.min(axis=0) - 1e-3, self.X_.max(axis=0) + 1e-3),
-                dtype=np.float64,
             ),
             nz=np.ones(self.X_.shape[0], dtype=bool),
             max_action_nb=2 * self.cart_nodes_list[0] + 1,
