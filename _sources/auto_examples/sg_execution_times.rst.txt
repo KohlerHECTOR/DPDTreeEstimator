@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**23:39.244** total execution time for 4 files **from auto_examples**:
+**25:54.834** total execution time for 5 files **from auto_examples**:
 
 .. container::
 
@@ -33,14 +33,17 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_examples_plot_model_selection.py` (``plot_model_selection.py``)
-     - 23:36.137
+     - 24:13.098
+     - 0.0
+   * - :ref:`sphx_glr_auto_examples_plot_gradient_boosting_comparison.py` (``plot_gradient_boosting_comparison.py``)
+     - 01:38.540
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_classifier_comparison.py` (``plot_classifier_comparison.py``)
-     - 00:02.211
+     - 00:02.255
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_pathological_tree_classif.py` (``plot_pathological_tree_classif.py``)
-     - 00:00.754
+     - 00:00.792
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_classifier.py` (``plot_classifier.py``)
-     - 00:00.142
+     - 00:00.150
      - 0.0
