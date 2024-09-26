@@ -60,7 +60,6 @@ def test_gb_dpdt_classifier(data):
         ),
     ],
 )
-@pytest.mark.parametrize("n_jobs", [None, 4])
 @pytest.mark.parametrize("n_estimators", [5, 7])
 @pytest.mark.parametrize("n_jobs_dpdt", [None, 4])
 def test_better_cart_gb(
@@ -69,7 +68,6 @@ def test_better_cart_gb(
     centers,
     max_depth,
     cart_nodes_list,
-    n_jobs,
     n_estimators,
     n_jobs_dpdt,
 ):
@@ -79,7 +77,6 @@ def test_better_cart_gb(
         n_estimators=n_estimators,
         max_depth=max_depth,
         cart_nodes_list=cart_nodes_list,
-        n_jobs=n_jobs,
         n_jobs_dpdt=n_jobs_dpdt,
     )
     clf.fit(X, y)
@@ -87,7 +84,6 @@ def test_better_cart_gb(
         n_estimators=n_estimators,
         max_depth=max_depth,
         use_default_dt=True,
-        n_jobs=n_jobs,
     )
     cart.fit(X, y)
     assert clf.score(X, y) >= cart.score(X, y)
@@ -106,7 +102,16 @@ def test_better_cart_gb(
     [2, 6],
 )
 @pytest.mark.parametrize("max_depth", [2, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (6, 6,)])
+@pytest.mark.parametrize(
+    "cart_nodes_list",
+    [
+        (3,),
+        (
+            6,
+            6,
+        ),
+    ],
+)
 @pytest.mark.parametrize("n_jobs", [None, 4])
 def test_better_cart(
     n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs
@@ -131,7 +136,17 @@ def test_better_cart(
 @pytest.mark.parametrize("max_depth", [2, 4])
 @pytest.mark.parametrize("max_nb_trees", [1, 100])
 @pytest.mark.parametrize("n_jobs", [None, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (128,), (3, 5,)])
+@pytest.mark.parametrize(
+    "cart_nodes_list",
+    [
+        (3,),
+        (128,),
+        (
+            3,
+            5,
+        ),
+    ],
+)
 def test_dpdt_learning(
     n_samples, n_features, max_depth, max_nb_trees, cart_nodes_list, n_jobs
 ):

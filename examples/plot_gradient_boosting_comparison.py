@@ -6,33 +6,27 @@ We compare gradient boosting with DPDT against
 gradient boosting with CART.
 """
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
+from sklearn.datasets import make_gaussian_quantiles
 from sklearn.dummy import DummyClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
 from dpdt import DPDTreeClassifier, GradientBoostingDPDTClassifier
 
-X_train = np.load(
-    "eye_movements_data/eye_movements_seed_0_x_train.npy", allow_pickle=True
+X, y = make_gaussian_quantiles(
+    n_samples=2_000, n_features=10, n_classes=3, random_state=1
 )
-y_train = np.load(
-    "eye_movements_data/eye_movements_seed_0_y_train.npy", allow_pickle=True
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, train_size=0.7, random_state=42
 )
-X_test = np.load(
-    "eye_movements_data/eye_movements_seed_0_x_test.npy", allow_pickle=True
-)
-y_test = np.load(
-    "eye_movements_data/eye_movements_seed_0_y_test.npy", allow_pickle=True
-)
-
 n_estimators = 50
 weak_cart = DecisionTreeClassifier(max_depth=3, random_state=42)
 weak_dpdt = DPDTreeClassifier(max_depth=3)
-gb_dpdt = GradientBoostingDPDTClassifier(n_estimators=n_estimators, n_jobs="best")
+gb_dpdt = GradientBoostingDPDTClassifier(n_estimators=n_estimators)
 gb_cart = GradientBoostingDPDTClassifier(
-    n_estimators=n_estimators, n_jobs="best", use_default_dt=True
+    n_estimators=n_estimators, use_default_dt=True
 )
 
 gb_dpdt.fit(X_train, y_train)

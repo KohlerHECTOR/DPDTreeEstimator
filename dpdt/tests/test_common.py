@@ -19,14 +19,14 @@ from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassi
         ),
     ],
 )
-@pytest.mark.parametrize("n_jobs", [None, 4])
-def test_check_estimator_gb(max_depth, n_estimators, cart_nodes_list, n_jobs):
+@pytest.mark.parametrize("n_jobs_dpdt", [None, 4])
+def test_check_estimator_gb(max_depth, n_estimators, cart_nodes_list, n_jobs_dpdt):
     check_estimator(
         GradientBoostingDPDTClassifier(
             max_depth=max_depth,
             n_estimators=n_estimators,
             cart_nodes_list=cart_nodes_list,
-            n_jobs=n_jobs,
+            n_jobs_dpdt=n_jobs_dpdt,
         )
     )
 
