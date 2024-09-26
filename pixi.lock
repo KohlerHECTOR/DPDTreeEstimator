@@ -3407,7 +3407,7 @@ packages:
   timestamp: 1713930478970
 - kind: pypi
   name: dpdt
-  version: 0.1.dev20+g93b86c3.d20240920
+  version: 0.1.dev38+gfc4bd01
   path: .
   sha256: 22ddb68ea7af42558d4b75aa5d1b098e37b95dd32afd80cef2a0913c9fca8372
   requires_dist:

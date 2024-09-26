@@ -8,7 +8,12 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.parallel import Parallel, delayed
-from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
+from sklearn.utils.validation import (
+    _check_sample_weight,
+    check_array,
+    check_is_fitted,
+    check_X_y,
+)
 
 
 class State:
@@ -150,7 +155,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         self.n_jobs = n_jobs
 
     @_fit_context(prefer_skip_nested_validation=True)
-    def fit(self, X, y):
+    def fit(self, X, y, sample_weight=None):
         """Fit the DPDTreeRegressor to the training data.
 
         Parameters
@@ -159,6 +164,12 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             The training input samples.
         y : array-like, shape (n_samples,)
             The target values. An array of int.
+        sample_weight : array-like of shape (n_samples,), default=None
+            Sample weights. If None, then samples are equally weighted.
+            Splits that would create child nodes with net zero or
+            negative weight are ignored while searching for a split in each node.
+            Splits are also ignored if they would result in any single
+            class carrying a negative weight in either child node.
 
         Returns
         -------
@@ -167,6 +178,16 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         """
         X, y = check_X_y(X, y, y_numeric=True, multi_output=True)
         self._check_n_features(X, reset=True)
+
+        if sample_weight is not None:
+            self._sample_weight = _check_sample_weight(sample_weight, X)
+            if y.squeeze().ndim > 1:
+                raise AssertionError(
+                    "sample weights are not yet supported for multioutput predictions"
+                )
+        else:
+            self._sample_weight = np.ones(len(X), dtype=np.float32)
+
         self.X_ = X
         self.y_ = y.astype(float)
 
@@ -222,6 +243,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             list_s_with_qs[i].qs = np.zeros((1, self.max_nb_trees), dtype=np.float32)
 
         # Process non-terminal states
+        # Copies n_jobs times the Datasets (heavy RAM)
         if self.n_jobs == "best":
             n_jobs = max(1, len(depth_0[2:]))
         else:
@@ -314,9 +336,14 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         State
             The expanded node.
         """
-        astar = self.y_[node.nz].mean(axis=0)
+        astar = np.average(
+            self.y_[node.nz], weights=self._sample_weight[node.nz], axis=0
+        )
+
         rstar = -1 * mean_squared_error(
-            self.y_[node.nz], np.tile(astar, (len(self.y_[node.nz]), 1))
+            self.y_[node.nz],
+            np.tile(astar, (len(self.y_[node.nz]), 1)),
+            sample_weight=self._sample_weight[node.nz],
         )
         rew = np.full((2, self.max_nb_trees), rstar, dtype=np.float32)
 
@@ -332,7 +359,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
                 ),
                 random_state=self.random_state,
             )
-            clf.fit(self.X_[node.nz], self.y_[node.nz])
+            clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
 
             masks = clf.tree_.feature >= 0
             valid_features = clf.tree_.feature[masks]
@@ -357,7 +384,6 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
                 valid_thresholds
             )
-
             act_max = (
                 2 * self.cart_nodes_list[depth + 1]
                 if depth + 1 < len(self.cart_nodes_list)
