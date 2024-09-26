@@ -65,6 +65,7 @@ test = { cmd = "pytest -vsl --cov=dpdt --cov-report=xml dpdt" }
 
 [tool.pixi.feature.doc.dependencies]
 matplotlib = "*"
+pandas = "*"
 numpydoc = "*"
 pydata-sphinx-theme = "*"
 setuptools-scm = ">=8"  # needed for the versioning

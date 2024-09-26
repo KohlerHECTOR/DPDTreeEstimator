@@ -25,9 +25,7 @@ n_estimators = 50
 weak_cart = DecisionTreeClassifier(max_depth=3, random_state=42)
 weak_dpdt = DPDTreeClassifier(max_depth=3)
 gb_dpdt = GradientBoostingDPDTClassifier(n_estimators=n_estimators)
-gb_cart = GradientBoostingDPDTClassifier(
-    n_estimators=n_estimators, use_default_dt=True
-)
+gb_cart = GradientBoostingDPDTClassifier(n_estimators=n_estimators, use_default_dt=True)
 
 gb_dpdt.fit(X_train, y_train)
 gb_cart.fit(X_train, y_train)
@@ -95,4 +93,4 @@ plt.plot(
 )
 
 plt.legend(["GB-DPDT", "GB-CART", "DecisionTreeClassifier", "DPDTreeClassifier"], loc=1)
-plt.savefig("gb_boosting_eye_movements")
+plt.savefig("gb_boosting_compare")
