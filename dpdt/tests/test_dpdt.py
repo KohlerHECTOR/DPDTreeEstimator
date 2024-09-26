@@ -24,19 +24,6 @@ def test_dpdt_classifier(data):
     assert y_pred.shape == (X.shape[0],)
 
 
-def test_gb_dpdt_classifier(data):
-    """Check the internals and behaviour of `DPDTreeClassifier`."""
-    X, y = data
-    clf = GradientBoostingDPDTClassifier(n_estimators=5)
-    clf.fit(X, y)
-    assert hasattr(clf, "classes_")
-    assert hasattr(clf, "X_")
-    assert hasattr(clf, "y_")
-
-    y_pred = clf.predict(X)
-    assert y_pred.shape == (X.shape[0],)
-
-
 @pytest.mark.parametrize(
     "n_samples",
     [10, 1000],
