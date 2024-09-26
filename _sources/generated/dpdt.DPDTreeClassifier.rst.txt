@@ -32,9 +32,6 @@
         ~DPDTreeClassifier.score
       
       
-        ~DPDTreeClassifier.set_fit_request
-      
-      
         ~DPDTreeClassifier.set_params
       
       

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>DPDTreeClassifier &#8212; DPDT 0.1.dev41+g46f785b.d20240926 documentation</title>
+    <title>DPDTreeClassifier &#8212; DPDT 0.1.dev46+gfaa32fa documentation</title>
   
   
   
@@ -42,7 +42,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=df334cf9"></script>
+    <script src="../_static/documentation_options.js?v=f451020c"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
@@ -127,8 +127,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="DPDT 0.1.dev41+g46f785b.d20240926 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="DPDT 0.1.dev41+g46f785b.d20240926 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="DPDT 0.1.dev46+gfaa32fa documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="DPDT 0.1.dev46+gfaa32fa documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +462,7 @@ for each zeta value.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.fit" title="dpdt.DPDTreeClassifier.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X, y[, sample_weight])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.fit" title="dpdt.DPDTreeClassifier.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X, y)</p></td>
 <td><p>Fit the DPDTreeClassifier to the training data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.get_metadata_routing" title="dpdt.DPDTreeClassifier.get_metadata_routing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_metadata_routing</span></code></a>()</p></td>
@@ -480,20 +480,17 @@ for each zeta value.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.score" title="dpdt.DPDTreeClassifier.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X, y[, sample_weight])</p></td>
 <td><p>Return the mean accuracy on the given test data and labels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.set_fit_request" title="dpdt.DPDTreeClassifier.set_fit_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fit_request</span></code></a>(*[, sample_weight])</p></td>
-<td><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.set_params" title="dpdt.DPDTreeClassifier.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.set_params" title="dpdt.DPDTreeClassifier.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
 <td><p>Set the parameters of this estimator.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.set_score_request" title="dpdt.DPDTreeClassifier.set_score_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_score_request</span></code></a>(*[, sample_weight])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpdt.DPDTreeClassifier.set_score_request" title="dpdt.DPDTreeClassifier.set_score_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_score_request</span></code></a>(*[, sample_weight])</p></td>
 <td><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpdt.DPDTreeClassifier.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpdt.DPDTreeClassifier.fit" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpdt.DPDTreeClassifier.fit" title="Link to this definition">#</a></dt>
 <dd><p>Fit the DPDTreeClassifier to the training data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -501,12 +498,6 @@ for each zeta value.</p>
 <dt><strong>X</strong><span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The training input samples.</p>
 </dd>
 <dt><strong>y</strong><span class="classifier">array-like, shape (n_samples,)</span></dt><dd><p>The target values. An array of int.</p>
-</dd>
-<dt><strong>sample_weight</strong><span class="classifier">array-like of shape (n_samples,), default=None</span></dt><dd><p>Sample weights. If None, then samples are equally weighted.
-Splits that would create child nodes with net zero or
-negative weight are ignored while searching for a split in each node.
-Splits are also ignored if they would result in any single
-class carrying a negative weight in either child node.</p>
 </dd>
 </dl>
 </dd>
@@ -629,49 +620,6 @@ each label set be correctly predicted.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dpdt.DPDTreeClassifier.set_fit_request">
-<span class="sig-name descname"><span class="pre">set_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dpdt.DPDTreeClassifier" title="dpdt.dpdt_classifier.DPDTreeClassifier"><span class="pre">DPDTreeClassifier</span></a></span></span><a class="headerlink" href="#dpdt.DPDTreeClassifier.set_fit_request" title="Link to this definition">#</a></dt>
-<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method.</p>
-<p>Note that this method is only relevant if
-<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
-Please see <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.5)"><span class="xref std std-ref">User Guide</span></a> on how the routing
-mechanism works.</p>
-<p>The options for each parameter are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">fit</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
-</ul>
-<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
-existing request. This allows you to change the request for some
-parameters and not others.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.3.</span></p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This method is only relevant if this estimator is used as a
-sub-estimator of a meta-estimator, e.g. used inside a
-<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>. Otherwise it has no effect.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>sample_weight</strong><span class="classifier">str, True, False, or None,                     default=sklearn.utils.metadata_routing.UNCHANGED</span></dt><dd><p>Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>self</strong><span class="classifier">object</span></dt><dd><p>The updated object.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dpdt.DPDTreeClassifier.set_params">
 <span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpdt.DPDTreeClassifier.set_params" title="Link to this definition">#</a></dt>
 <dd><p>Set the parameters of this estimator.</p>
@@ -751,9 +699,6 @@ sub-estimator of a meta-estimator, e.g. used inside a
 </div><div class="sphx-glr-thumbcontainer" tooltip="A Pathological Dataset"><img alt="" src="../_images/sphx_glr_plot_pathological_tree_classif_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/plot_pathological_tree_classif.html#sphx-glr-auto-examples-plot-pathological-tree-classif-py"><span class="std std-ref">A Pathological Dataset</span></a></p>
   <div class="sphx-glr-thumbnail-title">A Pathological Dataset</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Benchmarking DPDT"><img alt="" src="../_images/sphx_glr_plot_model_selection_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/plot_model_selection.html#sphx-glr-auto-examples-plot-model-selection-py"><span class="std std-ref">Benchmarking DPDT</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Benchmarking DPDT</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="A comparison of several tree-based classifiers in scikit-learn. It includes dpdt.dpdt_estimator..."><img alt="" src="../_images/sphx_glr_plot_classifier_comparison_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/plot_classifier_comparison.html#sphx-glr-auto-examples-plot-classifier-comparison-py"><span class="std std-ref">Classifier comparison</span></a></p>
   <div class="sphx-glr-thumbnail-title">Classifier comparison</div>
@@ -813,7 +758,6 @@ sub-estimator of a meta-estimator, e.g. used inside a
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dpdt.DPDTreeClassifier.get_pareto_front"><code class="docutils literal notranslate"><span class="pre">DPDTreeClassifier.get_pareto_front()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dpdt.DPDTreeClassifier.predict"><code class="docutils literal notranslate"><span class="pre">DPDTreeClassifier.predict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dpdt.DPDTreeClassifier.score"><code class="docutils literal notranslate"><span class="pre">DPDTreeClassifier.score()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dpdt.DPDTreeClassifier.set_fit_request"><code class="docutils literal notranslate"><span class="pre">DPDTreeClassifier.set_fit_request()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dpdt.DPDTreeClassifier.set_params"><code class="docutils literal notranslate"><span class="pre">DPDTreeClassifier.set_params()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dpdt.DPDTreeClassifier.set_score_request"><code class="docutils literal notranslate"><span class="pre">DPDTreeClassifier.set_score_request()</span></code></a></li>
 </ul>
