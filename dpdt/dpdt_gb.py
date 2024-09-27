@@ -140,23 +140,6 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         self.use_default_dt = use_default_dt
         self.n_jobs_dpdt = n_jobs_dpdt
 
-    def _fit_tree(self, X, gradients):
-        if self.use_default_dt:
-            tree = DecisionTreeRegressor(
-                max_depth=self.max_depth,
-                random_state=self.random_state,
-            )
-        else:
-            tree = DPDTreeRegressor(
-                max_depth=self.max_depth,
-                cart_nodes_list=self.cart_nodes_list,
-                random_state=self.random_state,
-                max_nb_trees=1,
-                n_jobs=self.n_jobs_dpdt,
-            )
-        tree.fit(X, -gradients)  # Note the negative sign
-        return tree
-
     def _is_fitted(self):
         return len(getattr(self, "estimators_", [])) > 0
 
@@ -245,9 +228,12 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
                 )
 
             tree.fit(X, neg_g_view[:, k])
+            
             # add tree to ensemble
             self.estimators_[i, k] = tree
 
+        # Update raw_predictions with the new tree's predictions
+        raw_predictions = predict_stage(self.estimators_[i], X, self.learning_rate, raw_predictions)
         return raw_predictions
 
     def _fit_stages(
