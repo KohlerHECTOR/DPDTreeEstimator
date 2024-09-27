@@ -23,7 +23,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 n_estimators = 50
 weak_cart = DecisionTreeClassifier(max_depth=3, random_state=42)
-weak_dpdt = DPDTreeClassifier(max_depth=3)
+weak_dpdt = DPDTreeClassifier(max_depth=3) #Not that weak
 gb_dpdt = GradientBoostingDPDTClassifier(n_estimators=n_estimators)
 gb_cart = GradientBoostingDPDTClassifier(n_estimators=n_estimators, use_default_dt=True)
 
@@ -68,7 +68,6 @@ boosting_errors_dpdt = pd.DataFrame(
 ax = boosting_errors_dpdt.plot()
 ax.set_ylabel("Misclassification error on test set")
 ax.set_title("Convergence of GB-DPDT algorithm")
-
 
 plt.plot(
     range(1, gb_cart.n_estimators + 1),
