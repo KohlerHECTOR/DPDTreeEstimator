@@ -228,12 +228,14 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
                 )
 
             tree.fit(X, neg_g_view[:, k])
-            
+
             # add tree to ensemble
             self.estimators_[i, k] = tree
 
         # Update raw_predictions with the new tree's predictions
-        raw_predictions = predict_stage(self.estimators_[i], X, self.learning_rate, raw_predictions)
+        raw_predictions = predict_stage(
+            self.estimators_[i], X, self.learning_rate, raw_predictions
+        )
         return raw_predictions
 
     def _fit_stages(
