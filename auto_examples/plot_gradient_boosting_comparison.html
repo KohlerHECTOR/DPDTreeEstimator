@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Multi-class Gradient Boosting Trees &#8212; DPDT 0.1.dev48+g5c69776 documentation</title>
+    <title>Multi-class Gradient Boosting Trees &#8212; DPDT 0.1.dev49+g1cdf711 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=c00caf47"></script>
+    <script src="../_static/documentation_options.js?v=29e2bd66"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
@@ -127,8 +127,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="DPDT 0.1.dev48+g5c69776 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="DPDT 0.1.dev48+g5c69776 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="DPDT 0.1.dev49+g1cdf711 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="DPDT 0.1.dev49+g1cdf711 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -437,7 +437,7 @@ DPDTreeClassifier&#39;s misclassification_error: 0.547
 <span class="p">)</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_estimators</span></a> <span class="o">=</span> <span class="mi">50</span>
 <span class="n">weak_cart</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-<a href="../generated/dpdt.DPDTreeClassifier.html#dpdt.DPDTreeClassifier" title="dpdt.DPDTreeClassifier" class="sphx-glr-backref-module-dpdt sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weak_dpdt</span></a> <span class="o">=</span> <a href="../generated/dpdt.DPDTreeClassifier.html#dpdt.DPDTreeClassifier" title="dpdt.DPDTreeClassifier" class="sphx-glr-backref-module-dpdt sphx-glr-backref-type-py-class"><span class="n">DPDTreeClassifier</span></a><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c1">#Not that weak</span>
+<a href="../generated/dpdt.DPDTreeClassifier.html#dpdt.DPDTreeClassifier" title="dpdt.DPDTreeClassifier" class="sphx-glr-backref-module-dpdt sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weak_dpdt</span></a> <span class="o">=</span> <a href="../generated/dpdt.DPDTreeClassifier.html#dpdt.DPDTreeClassifier" title="dpdt.DPDTreeClassifier" class="sphx-glr-backref-module-dpdt sphx-glr-backref-type-py-class"><span class="n">DPDTreeClassifier</span></a><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Not that weak</span>
 <span class="n">gb_dpdt</span> <span class="o">=</span> <span class="n">GradientBoostingDPDTClassifier</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_estimators</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_estimators</span></a><span class="p">)</span>
 <span class="n">gb_cart</span> <span class="o">=</span> <span class="n">GradientBoostingDPDTClassifier</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_estimators</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_estimators</span></a><span class="p">,</span> <span class="n">use_default_dt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -509,7 +509,7 @@ DPDTreeClassifier&#39;s misclassification_error: 0.547
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="matplotlib.pyplot.savefig" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span></a><span class="p">(</span><span class="s2">&quot;gb_boosting_compare&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 14.101 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 13.528 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-gradient-boosting-comparison-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/792295d4fac5001991a3a5c74bf4a215/plot_gradient_boosting_comparison.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_gradient_boosting_comparison.ipynb</span></code></a></p>
