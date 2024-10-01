@@ -186,7 +186,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             nz=np.ones(self.X_.shape[0], dtype=bool),
             max_action_nb=2 * self.cart_nodes_list[0] + 1,
         )
-
+        self._count_ops = 0
         self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float64)
 
         self._trees = self._build_mdp_opt_pol_parallel()
@@ -317,7 +317,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         State
             The expanded node.
         """
-
+        self._count_ops += 1
         classes, counts = np.unique(self.y_[node.nz], return_counts=True)
         rstar = max(counts) / node.nz.sum() - 1.0
         astar = classes[counts.argmax()]
