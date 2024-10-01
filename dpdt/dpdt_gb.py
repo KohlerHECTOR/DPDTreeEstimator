@@ -14,7 +14,6 @@ from sklearn.tree._tree import DTYPE
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import check_array, check_is_fitted, column_or_1d
-from pystreed import STreeDRegressor
 from .dpdt_regressor import DPDTreeRegressor
 
 
@@ -130,7 +129,6 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         cart_nodes_list=(32,),
         random_state=42,
         use_default_dt=False,
-        use_opt_dt=False,
         n_jobs_dpdt=None,
     ):
         self.n_estimators = n_estimators
@@ -140,7 +138,6 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         self.random_state = random_state
         self.use_default_dt = use_default_dt
         self.n_jobs_dpdt = n_jobs_dpdt
-        self.use_opt_dt = use_opt_dt
 
     def _is_fitted(self):
         return len(getattr(self, "estimators_", [])) > 0
@@ -213,23 +210,20 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         for k in range(self.n_trees_per_iteration_):
             if self._loss.is_multiclass:
                 y = np.array(original_y == k, dtype=np.float64)
-            if self.use_opt_dt:
-                tree = STreeDRegressor(max_depth=3, time_limit = 8 * 60)
-            else:
             # induce regression tree on the negative gradient
-                if self.use_default_dt:
-                    tree = DecisionTreeRegressor(
-                        max_depth=self.max_depth,
-                        random_state=self.random_state,
-                    )
-                else:
-                    tree = DPDTreeRegressor(
-                        max_depth=self.max_depth,
-                        cart_nodes_list=self.cart_nodes_list,
-                        random_state=self.random_state,
-                        max_nb_trees=1,
-                        n_jobs=self.n_jobs_dpdt,
-                    )
+            if self.use_default_dt:
+                tree = DecisionTreeRegressor(
+                    max_depth=self.max_depth,
+                    random_state=self.random_state,
+                )
+            else:
+                tree = DPDTreeRegressor(
+                    max_depth=self.max_depth,
+                    cart_nodes_list=self.cart_nodes_list,
+                    random_state=self.random_state,
+                    max_nb_trees=1,
+                    n_jobs=self.n_jobs_dpdt,
+                )
 
             tree.fit(X, neg_g_view[:, k])
 
