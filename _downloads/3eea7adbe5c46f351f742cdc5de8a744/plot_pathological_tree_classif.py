@@ -64,8 +64,7 @@ end = time() - start
 score_ = tree.score(x, y)
 DecisionBoundaryDisplay.from_estimator(tree, x, cmap=cm, alpha=0.8, ax=axs[1], eps=0.5)
 axs[1].set_title(
-    f"Decision Tree\nAccuracy: {score_*100}%\nTime: {end:.4f}s",
-    fontsize=20
+    f"Decision Tree\nAccuracy: {score_*100}%\nTime: {end:.4f}s", fontsize=20
 )
 axs[1].set_xlim(0, 1)
 axs[1].set_ylim(0, 1)
@@ -74,21 +73,26 @@ axs[1].set_yticks(())
 
 # Plot 3: DPDTreeClassifier
 start = time()
-dpd_tree = DPDTreeClassifier(max_depth=3, random_state=0, cart_nodes_list=(8,)).fit(x, y)
+dpd_tree = DPDTreeClassifier(max_depth=3, random_state=0, cart_nodes_list=(8,)).fit(
+    x, y
+)
 end = time() - start
 score_ = dpd_tree.score(x, y)
-DecisionBoundaryDisplay.from_estimator(dpd_tree, x, cmap=cm, alpha=0.8, ax=axs[2], eps=0.5)
+DecisionBoundaryDisplay.from_estimator(
+    dpd_tree, x, cmap=cm, alpha=0.8, ax=axs[2], eps=0.5
+)
 axs[2].set_xlim(0, 1)
 axs[2].set_ylim(0, 1)
 axs[2].set_xticks(())
 axs[2].set_yticks(())
 axs[2].set_title(
-    f"DP Decision Tree\nAccuracy: {score_*100}%\nTime: {end:.4f}s",
-    fontsize=20
+    f"DP Decision Tree\nAccuracy: {score_*100}%\nTime: {end:.4f}s", fontsize=20
 )
 
 # Plot 4: Opt Decision Tree (placeholder)
-DecisionBoundaryDisplay.from_estimator(dpd_tree, x, cmap=cm, alpha=0.8, ax=axs[3], eps=0.5)
+DecisionBoundaryDisplay.from_estimator(
+    dpd_tree, x, cmap=cm, alpha=0.8, ax=axs[3], eps=0.5
+)
 axs[3].set_xlim(0, 1)
 axs[3].set_ylim(0, 1)
 axs[3].set_xticks(())
@@ -97,4 +101,4 @@ axs[3].set_title("Opt Decision Tree\nAccuracy: 100%\nTime: 92s", fontsize=20)
 
 # Adjust layout and save figure
 plt.tight_layout()
-plt.savefig("patho_bounds_comparison", dpi=300, bbox_inches='tight')
+plt.savefig("patho_bounds_comparison", dpi=300, bbox_inches="tight")
