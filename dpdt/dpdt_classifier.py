@@ -317,7 +317,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         State
             The expanded node.
         """
-        self._count_ops += 1
         classes, counts = np.unique(self.y_[node.nz], return_counts=True)
         rstar = max(counts) / node.nz.sum() - 1.0
         astar = classes[counts.argmax()]
@@ -384,6 +383,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
             for action in actions:
                 node.add_action(action)
+            self._count_ops += 1
         return node
 
     def predict(self, X):
