@@ -14,6 +14,7 @@ from sklearn.tree._tree import DTYPE
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import check_array, check_is_fitted, column_or_1d
+
 from .dpdt_regressor import DPDTreeRegressor
 
 
