@@ -46,61 +46,55 @@ grid = np.vstack([feature_1.ravel(), feature_2.ravel()]).T
 cm = plt.cm.RdBu
 cm_bright = ListedColormap(["#FF0000", "#0000FF"])
 
-# Create figure with 3 subplots
-fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize=(16, 3))
+# Create figure with 4 subplots
+fig, axs = plt.subplots(1, 4, figsize=(20, 4))
 
 # Plot 1: Pathological dataset
-ax1.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolor="black")
-ax1.set_title("Pathological Dataset")
-ax1.set_xlim(0, 1)
-ax1.set_ylim(0, 1)
-ax1.set_xticks(())
-ax1.set_yticks(())
+axs[0].scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolor="black", s=10)
+axs[0].set_title("Pathological Dataset\n  ", fontsize=25)
+axs[0].set_xlim(0, 1)
+axs[0].set_ylim(0, 1)
+axs[0].set_xticks(())
+axs[0].set_yticks(())
 
 # Plot 2: DecisionTreeClassifier
 start = time()
 tree = DecisionTreeClassifier(max_depth=3, random_state=0).fit(x, y)
 end = time() - start
 score_ = tree.score(x, y)
-DecisionBoundaryDisplay.from_estimator(tree, x, cmap=cm, alpha=0.8, ax=ax2, eps=0.5)
-# ax2.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolors="k", alpha=0.2)
-ax2.set_title(
-    "Decision Tree\n Accuracy:{}%, Time: {}s".format(round(score_ * 100), round(end, 4))
+DecisionBoundaryDisplay.from_estimator(tree, x, cmap=cm, alpha=0.8, ax=axs[1], eps=0.5)
+axs[1].set_title(
+    f"Decision Tree\nAccuracy: {score_*100}%\nTime: {end:.4f}s",
+    fontsize=20
 )
-ax2.set_xlim(0, 1)
-ax2.set_ylim(0, 1)
-ax2.set_xticks(())
-ax2.set_yticks(())
+axs[1].set_xlim(0, 1)
+axs[1].set_ylim(0, 1)
+axs[1].set_xticks(())
+axs[1].set_yticks(())
 
 # Plot 3: DPDTreeClassifier
 start = time()
-dpd_tree = DPDTreeClassifier(max_depth=3, random_state=0, cart_nodes_list=(8,)).fit(
-    x, y
-)
+dpd_tree = DPDTreeClassifier(max_depth=3, random_state=0, cart_nodes_list=(8,)).fit(x, y)
 end = time() - start
 score_ = dpd_tree.score(x, y)
-DecisionBoundaryDisplay.from_estimator(dpd_tree, x, cmap=cm, alpha=0.8, ax=ax3, eps=0.5)
-# ax3.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolors="k", alpha=0.2)
-ax3.set_xlim(0, 1)
-ax3.set_ylim(0, 1)
-ax3.set_xticks(())
-ax3.set_yticks(())
-ax3.set_title(
-    "DP Decision Tree\n Accuracy:{}%, Time: {}s".format(
-        round(score_ * 100), round(end, 4)
-    )
+DecisionBoundaryDisplay.from_estimator(dpd_tree, x, cmap=cm, alpha=0.8, ax=axs[2], eps=0.5)
+axs[2].set_xlim(0, 1)
+axs[2].set_ylim(0, 1)
+axs[2].set_xticks(())
+axs[2].set_yticks(())
+axs[2].set_title(
+    f"DP Decision Tree\nAccuracy: {score_*100}%\nTime: {end:.4f}s",
+    fontsize=20
 )
 
-
-DecisionBoundaryDisplay.from_estimator(dpd_tree, x, cmap=cm, alpha=0.8, ax=ax4, eps=0.5)
-# ax3.scatter(x[:, 0], x[:, 1], c=y, cmap=cm_bright, edgecolors="k", alpha=0.2)
-ax4.set_xlim(0, 1)
-ax4.set_ylim(0, 1)
-ax4.set_xticks(())
-ax4.set_yticks(())
-ax4.set_title("Opt Decision Tree\n Accuracy:100%, Time: 92s")
-
+# Plot 4: Opt Decision Tree (placeholder)
+DecisionBoundaryDisplay.from_estimator(dpd_tree, x, cmap=cm, alpha=0.8, ax=axs[3], eps=0.5)
+axs[3].set_xlim(0, 1)
+axs[3].set_ylim(0, 1)
+axs[3].set_xticks(())
+axs[3].set_yticks(())
+axs[3].set_title("Opt Decision Tree\nAccuracy: 100%\nTime: 92s", fontsize=20)
 
 # Adjust layout and save figure
 plt.tight_layout()
-plt.savefig("patho_bounds_comparison")
+plt.savefig("patho_bounds_comparison", dpi=300, bbox_inches='tight')
