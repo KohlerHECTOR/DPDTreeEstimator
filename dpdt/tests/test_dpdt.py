@@ -100,15 +100,20 @@ def test_better_cart_gb(
     ],
 )
 @pytest.mark.parametrize("n_jobs", [None, 4])
+@pytest.mark.parametrize("sw", [True, False])
 def test_better_cart(
-    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs
+    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs, sw
 ):
     X, y = make_blobs(n_samples, centers=centers, n_features=n_features, random_state=0)
     y = y.reshape(-1, 1)
     clf = DPDTreeClassifier(max_depth, cart_nodes_list=cart_nodes_list, n_jobs=n_jobs)
-    clf.fit(X, y)
+    if sw:
+        sample_weight = np.random.default_rng(42).random(len(X))
+    else:
+        sample_weight = None
+    clf.fit(X, y, sample_weight)
     cart = DecisionTreeClassifier(max_depth=max_depth, random_state=clf.random_state)
-    cart.fit(X, y)
+    cart.fit(X, y, sample_weight)
     assert clf.score(X, y) >= cart.score(X, y)
 
 
