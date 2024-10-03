@@ -49,6 +49,8 @@ def test_dpdt_classifier(data):
 )
 @pytest.mark.parametrize("n_estimators", [5, 7])
 @pytest.mark.parametrize("n_jobs_dpdt", [None, 4])
+@pytest.mark.parametrize("xgboost", [False, True])
+@pytest.mark.parametrize("reg_lambda", [0, 0.1])
 def test_better_cart_gb(
     n_samples,
     n_features,
@@ -57,6 +59,8 @@ def test_better_cart_gb(
     cart_nodes_list,
     n_estimators,
     n_jobs_dpdt,
+    xgboost,
+    reg_lambda,
 ):
     X, y = make_blobs(n_samples, centers=centers, n_features=n_features, random_state=0)
     y = y.reshape(-1, 1)
@@ -65,12 +69,16 @@ def test_better_cart_gb(
         max_depth=max_depth,
         cart_nodes_list=cart_nodes_list,
         n_jobs_dpdt=n_jobs_dpdt,
+        xgboost=xgboost,
+        reg_lambda=reg_lambda,
     )
     clf.fit(X, y)
     cart = GradientBoostingDPDTClassifier(
         n_estimators=n_estimators,
         max_depth=max_depth,
         use_default_dt=True,
+        xgboost=xgboost,
+        reg_lambda=reg_lambda,
     )
     cart.fit(X, y)
     assert clf.score(X, y) >= cart.score(X, y)
