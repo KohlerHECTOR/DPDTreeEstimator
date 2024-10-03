@@ -383,7 +383,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
             for action in actions:
                 node.add_action(action)
-            self._count_ops += 1
+            self._count_ops += clf.tree_.node_count
         return node
 
     def predict(self, X):
