@@ -16,6 +16,7 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import check_array, check_is_fitted, column_or_1d
 
 from .dpdt_regressor import DPDTreeRegressor
+from pystreed import STreeDRegressor
 
 
 def predict_stage(estimator_at_i, X, learning_rate, raw_predictions):
@@ -135,7 +136,9 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         n_jobs_dpdt=None,
         xgboost=False,
         reg_lambda=0,
+        use_opt_dt=False,
     ):
+        self.use_opt_dt = use_opt_dt
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate
         self.max_depth = max_depth
@@ -229,27 +232,32 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
                 target = neg_g_view[:, k]
 
             # Fit the tree on the target
-            if self.use_default_dt:
-                tree = DecisionTreeRegressor(
-                    max_depth=self.max_depth,
-                    random_state=self.random_state,
-                )
+            if self.use_opt_dt:
+                tree = STreeDRegressor(max_depth=3, time_limit = 8 * 60)
             else:
-                tree = DPDTreeRegressor(
-                    max_depth=self.max_depth,
-                    cart_nodes_list=self.cart_nodes_list,
-                    random_state=self.random_state,
-                    max_nb_trees=1,
-                    n_jobs=self.n_jobs_dpdt,
-                )
+                if self.use_default_dt:
+                    tree = DecisionTreeRegressor(
+                        max_depth=self.max_depth,
+                        random_state=self.random_state,
+                    )
+                else:
+                    tree = DPDTreeRegressor(
+                        max_depth=self.max_depth,
+                        cart_nodes_list=self.cart_nodes_list,
+                        random_state=self.random_state,
+                        max_nb_trees=1,
+                        n_jobs=self.n_jobs_dpdt,
+                    )
 
             # Use sample weights based on the Hessian
             if self.xgboost:
                 sample_weight = hess_view[:, k]
             else:
                 sample_weight = None
-
-            tree.fit(X, target, sample_weight=sample_weight)
+            if self.use_opt_dt:
+                tree.fit(X, target)
+            else:
+                tree.fit(X, target, sample_weight=sample_weight)
 
             # add tree to ensemble
             self.estimators_[i, k] = tree
