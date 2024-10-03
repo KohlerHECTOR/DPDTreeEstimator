@@ -170,7 +170,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             negative weight are ignored while searching for a split in each node.
             Splits are also ignored if they would result in any single
             class carrying a negative weight in either child node.
-        
+
         Returns
         -------
         self : object

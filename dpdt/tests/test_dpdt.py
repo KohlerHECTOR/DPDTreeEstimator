@@ -203,16 +203,21 @@ def test_better_cart_multiout(
 @pytest.mark.parametrize("max_depth", [2, 4])
 @pytest.mark.parametrize("cart_nodes_list", [(3,), (6, 6)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
+@pytest.mark.parametrize("sw", [True, False])
 def test_better_cart_regress(
-    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs
+    n_samples, n_features, centers, max_depth, cart_nodes_list, n_jobs, sw
 ):
     X = np.random.random(size=(n_samples, n_features))
     y = np.array([sum([x[0] ** i for i in range(centers)]) for x in X])
     y = y.reshape(-1, 1)
+    if sw:
+        sample_weight = np.random.default_rng(42).random(len(X))
+    else:
+        sample_weight = None
     clf = DPDTreeRegressor(max_depth, cart_nodes_list=cart_nodes_list, n_jobs=n_jobs)
-    clf.fit(X, y)
+    clf.fit(X, y, sample_weight)
     cart = DecisionTreeRegressor(max_depth=max_depth, random_state=clf.random_state)
-    cart.fit(X, y)
+    cart.fit(X, y, sample_weight)
     dpdt_score = clf.score(X, y)
     cart_score = cart.score(X, y)
     assert np.allclose(dpdt_score, cart_score, rtol=1e-3) or dpdt_score >= cart_score
