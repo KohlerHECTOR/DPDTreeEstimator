@@ -3,7 +3,7 @@ import pytest
 from sklearn.datasets import load_iris, make_blobs
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
-from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassifier
+from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassifier, TopKTreeClassifier
 
 
 @pytest.fixture
