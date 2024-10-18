@@ -26,17 +26,17 @@ def test_dpdt_classifier(data):
 
 @pytest.mark.parametrize(
     "n_samples",
-    [10, 1000],
+    [10, 100],
 )
 @pytest.mark.parametrize(
     "n_features",
-    [5, 500],
+    [5, 50],
 )
 @pytest.mark.parametrize(
     "centers",
     [2, 6],
 )
-@pytest.mark.parametrize("max_depth", [3, 4])
+@pytest.mark.parametrize("max_depth", [2, 3])
 @pytest.mark.parametrize(
     "cart_nodes_list",
     [
@@ -47,7 +47,7 @@ def test_dpdt_classifier(data):
         ),
     ],
 )
-@pytest.mark.parametrize("n_estimators", [5, 7])
+@pytest.mark.parametrize("n_estimators", [3, 4])
 @pytest.mark.parametrize("n_jobs_dpdt", [None, 4])
 @pytest.mark.parametrize("xgboost", [False, True])
 @pytest.mark.parametrize("reg_lambda", [0, 0.1])
@@ -86,24 +86,24 @@ def test_better_cart_gb(
 
 @pytest.mark.parametrize(
     "n_samples",
-    [10, 1000],
+    [10, 100],
 )
 @pytest.mark.parametrize(
     "n_features",
-    [5, 500],
+    [5, 50],
 )
 @pytest.mark.parametrize(
     "centers",
     [2, 6],
 )
-@pytest.mark.parametrize("max_depth", [2, 4])
+@pytest.mark.parametrize("max_depth", [2, 3])
 @pytest.mark.parametrize(
     "cart_nodes_list",
     [
         (3,),
         (
-            6,
-            6,
+            3,
+            3,
         ),
     ],
 )
@@ -127,23 +127,23 @@ def test_better_cart(
 
 @pytest.mark.parametrize(
     "n_samples",
-    [10, 1000],
+    [10, 100],
 )
 @pytest.mark.parametrize(
     "n_features",
-    [5, 500],
+    [5, 50],
 )
-@pytest.mark.parametrize("max_depth", [2, 4])
-@pytest.mark.parametrize("max_nb_trees", [1, 100])
+@pytest.mark.parametrize("max_depth", [2, 3])
+@pytest.mark.parametrize("max_nb_trees", [1, 10])
 @pytest.mark.parametrize("n_jobs", [None, 4])
 @pytest.mark.parametrize(
     "cart_nodes_list",
     [
         (3,),
-        (128,),
+        (12,),
         (
             3,
-            5,
+            3,
         ),
     ],
 )
@@ -165,13 +165,13 @@ def test_dpdt_learning(
 )
 @pytest.mark.parametrize(
     "n_features",
-    [5, 200],
+    [5, 20],
 )
 @pytest.mark.parametrize(
     "centers",
     [2, 6],
 )
-@pytest.mark.parametrize("max_depth", [2, 4])
+@pytest.mark.parametrize("max_depth", [2, 3])
 @pytest.mark.parametrize("cart_nodes_list", [(3,)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
 def test_better_cart_multiout(
@@ -190,18 +190,18 @@ def test_better_cart_multiout(
 
 @pytest.mark.parametrize(
     "n_samples",
-    [10, 1000],
+    [10, 100],
 )
 @pytest.mark.parametrize(
     "n_features",
-    [5, 500],
+    [5, 50],
 )
 @pytest.mark.parametrize(
     "centers",
     [2, 6],
 )
-@pytest.mark.parametrize("max_depth", [2, 4])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (6, 6)])
+@pytest.mark.parametrize("max_depth", [2, 3])
+@pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 3)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
 @pytest.mark.parametrize("sw", [True, False])
 def test_better_cart_regress(

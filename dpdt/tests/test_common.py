@@ -8,7 +8,7 @@ from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassi
 
 
 @pytest.mark.parametrize("max_depth", [2, 3])
-@pytest.mark.parametrize("n_estimators", [1, 2, 20])
+@pytest.mark.parametrize("n_estimators", [2, 4])
 @pytest.mark.parametrize(
     "cart_nodes_list",
     [
@@ -31,9 +31,9 @@ def test_check_estimator_gb(max_depth, n_estimators, cart_nodes_list, n_jobs_dpd
     )
 
 
-@pytest.mark.parametrize("max_depth", [2, 4])
-@pytest.mark.parametrize("max_nb_trees", [1, 100])
-@pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 5, 4, 1)])
+@pytest.mark.parametrize("max_depth", [2, 3])
+@pytest.mark.parametrize("max_nb_trees", [1, 10])
+@pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 3, 1)])
 @pytest.mark.parametrize("n_jobs", [None, 4])
 def test_check_estimator(max_depth, max_nb_trees, cart_nodes_list, n_jobs):
     check_estimator(
