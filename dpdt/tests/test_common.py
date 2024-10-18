@@ -1,7 +1,12 @@
 import pytest
 from sklearn.utils.estimator_checks import check_estimator
 
-from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassifier, TopKTreeClassifier
+from dpdt import (
+    DPDTreeClassifier,
+    DPDTreeRegressor,
+    GradientBoostingDPDTClassifier,
+    TopKTreeClassifier,
+)
 
 # parametrize_with_checks allows to get a generator of check that is more fine-grained
 # than check_estimator
@@ -48,11 +53,10 @@ def test_check_estimator(max_depth, max_nb_trees, cart_nodes_list, n_jobs):
 @pytest.mark.parametrize("max_nb_trees", [1, 10])
 @pytest.mark.parametrize("k", [2, 3])
 @pytest.mark.parametrize("n_jobs", [None, 4])
-def test_check_estimator(max_depth, max_nb_trees, k, n_jobs):
+def test_check_estimator_topk(max_depth, max_nb_trees, k, n_jobs):
+    check_estimator(TopKTreeClassifier(max_depth, max_nb_trees, k, n_jobs=n_jobs))
     check_estimator(
-        TopKTreeClassifier(max_depth, max_nb_trees, k, n_jobs=n_jobs)
+        TopKTreeClassifier(
+            max_depth, max_nb_trees, k, different_feat=False, n_jobs=n_jobs
+        )
     )
-    check_estimator(
-        TopKTreeClassifier(max_depth, max_nb_trees, k, different_feat=False, n_jobs=n_jobs)
-    )
-    

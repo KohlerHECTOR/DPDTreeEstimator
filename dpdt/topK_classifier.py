@@ -10,6 +10,7 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import check_is_fitted
 
+
 def gini_impurity(y):
     """
     Compute the Gini impurity of a dataset.
@@ -26,8 +27,9 @@ def gini_impurity(y):
     """
     _, counts = np.unique(y, return_counts=True)
     probabilities = counts / len(y)
-    gini = 1 - np.sum(probabilities ** 2)
+    gini = 1 - np.sum(probabilities**2)
     return gini
+
 
 class State:
     """Represent a state in the Markov Decision Process (MDP).
@@ -380,7 +382,9 @@ class TopKTreeClassifier(ClassifierMixin, BaseEstimator):
                     n_right = np.sum(right_mask)
                     n_total = len(self.y_[node.nz])
 
-                    weighted_gini = (n_left / n_total) * left_gini + (n_right / n_total) * right_gini
+                    weighted_gini = (n_left / n_total) * left_gini + (
+                        n_right / n_total
+                    ) * right_gini
 
                     splits.append((feature, threshold, weighted_gini))
 
@@ -389,7 +393,7 @@ class TopKTreeClassifier(ClassifierMixin, BaseEstimator):
             sorted_splits = sorted(splits, key=lambda x: x[2])
 
             if not self.different_feat:
-                top_k_splits = sorted_splits[:min(self.k, len(splits))]
+                top_k_splits = sorted_splits[: min(self.k, len(splits))]
             else:
                 top_k_splits = []
                 seen_feat = []
