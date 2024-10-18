@@ -204,6 +204,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             max_action_nb=2 * self.cart_nodes_list[0] + 1,
         )
 
+        self._count_ops = 0
         self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float64)
 
         self._trees = self._build_mdp_opt_pol_parallel()
@@ -405,6 +406,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
             for action in actions:
                 node.add_action(action)
+            self._count_ops += len(actions)
         return node
 
     def predict(self, X):
