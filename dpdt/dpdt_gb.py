@@ -112,7 +112,8 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         "n_estimators": [Interval(Integral, 1, None, closed="left")],
         "learning_rate": [Interval(Real, 0, None, closed="left")],
         "max_depth": [Interval(Integral, 2, None, closed="left")],
-        "cart_nodes_list": ["array-like"],
+        "clf_cls": [DPDTreeRegressor, DecisionTreeRegressor],
+        "clf_kwrgs": [dict],
         "random_state": [Interval(Integral, 0, None, closed="left")],
         "use_default_dt": ["boolean"],
         "n_jobs_dpdt": [
@@ -126,23 +127,17 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
 
     def __init__(
         self,
+        clf_cls,
+        clf_kwrgs,
         n_estimators=100,
         learning_rate=0.1,
-        max_depth=3,
-        cart_nodes_list=(32,),
-        random_state=42,
-        use_default_dt=False,
-        n_jobs_dpdt=None,
         xgboost=False,
         reg_lambda=0,
     ):
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate
-        self.max_depth = max_depth
-        self.cart_nodes_list = cart_nodes_list
-        self.random_state = random_state
-        self.use_default_dt = use_default_dt
-        self.n_jobs_dpdt = n_jobs_dpdt
+        self.clf_cls = clf_cls
+        self.clf_kwrgs = clf_kwrgs
         self.xgboost = xgboost
         self.reg_lambda = reg_lambda
 
@@ -229,19 +224,7 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
                 target = neg_g_view[:, k]
 
             # Fit the tree on the target
-            if self.use_default_dt:
-                tree = DecisionTreeRegressor(
-                    max_depth=self.max_depth,
-                    random_state=self.random_state,
-                )
-            else:
-                tree = DPDTreeRegressor(
-                    max_depth=self.max_depth,
-                    cart_nodes_list=self.cart_nodes_list,
-                    random_state=self.random_state,
-                    max_nb_trees=1,
-                    n_jobs=self.n_jobs_dpdt,
-                )
+            tree = self.clf_cls(**self.clf_kwrgs)
 
             # Use sample weights based on the Hessian
             if self.xgboost:

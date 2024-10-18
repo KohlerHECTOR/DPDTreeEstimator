@@ -1,4 +1,5 @@
 import pytest
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.utils.estimator_checks import check_estimator
 
 from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassifier
@@ -9,16 +10,7 @@ from dpdt import DPDTreeClassifier, DPDTreeRegressor, GradientBoostingDPDTClassi
 
 @pytest.mark.parametrize("max_depth", [2, 3])
 @pytest.mark.parametrize("n_estimators", [1, 2, 20])
-@pytest.mark.parametrize(
-    "cart_nodes_list",
-    [
-        (3,),
-        (
-            3,
-            3,
-        ),
-    ],
-)
+@pytest.mark.parametrize("clfs", [(DecisionTreeRegressor, {"max_depth":2}), (DPDTreeRegressor, {"name":"8x3"})])
 @pytest.mark.parametrize("n_jobs_dpdt", [None, 4])
 def test_check_estimator_gb(max_depth, n_estimators, cart_nodes_list, n_jobs_dpdt):
     check_estimator(

@@ -1,6 +1,7 @@
 """Dynamic Programming Decision Tree (DPDTree) regressor implementation."""
 from copy import deepcopy
 from numbers import Integral
+from typing import List, Tuple
 
 import numpy as np
 from sklearn.base import BaseEstimator, MultiOutputMixin, RegressorMixin, _fit_context
@@ -14,6 +15,8 @@ from sklearn.utils.validation import (
     check_is_fitted,
     check_X_y,
 )
+
+from .splitters import SplitGenerator
 
 
 class State:
@@ -81,14 +84,14 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
     Parameters
     ----------
+    split_generators : list of tuple of ``SplitGenerators``
+        List containing the split generators and their kwargs as tuples.
     max_depth : int
         The maximum depth of the tree.
     max_nb_trees : int, default=100
         The maximum number of trees.
     random_state : int, default=42
         Fixes randomness of the regressor. Randomness happens in the calls to cart.
-    cart_nodes_list : list of int, default=(32,)
-        List containing the number of leaf nodes for the CART trees at each depth.
     n_jobs : int, default=None
         The number of jobs to run in parallel.
 
@@ -128,9 +131,9 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
     """
 
     _parameter_constraints = {
+        "split_generators": [List[List[SplitGenerator, dict]]],
         "max_depth": [Interval(Integral, 2, None, closed="left")],
         "max_nb_trees": [Interval(Integral, 1, None, closed="left")],
-        "cart_nodes_list": ["array-like"],
         "random_state": [Interval(Integral, 0, None, closed="left")],
         "n_jobs": [
             Interval(Integral, 1, None, closed="left"),
@@ -141,16 +144,19 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
     def __init__(
         self,
-        max_depth=3,
+        split_generators,
+        max_depth,
         max_nb_trees=100,
-        cart_nodes_list=(32,),
         random_state=42,
         n_jobs=None,
     ):
         """Initialize the DPDTreeRegressor."""
+        self.split_generators = split_generators
+        for _, params in self.split_generators:
+            params["random_state"] = random_state
+        assert len(self.split_generators) == max_depth, "There should be one splitter per tree depth"
         self.max_depth = max_depth
         self.max_nb_trees = max_nb_trees
-        self.cart_nodes_list = cart_nodes_list
         self.random_state = random_state
         self.n_jobs = n_jobs
 
@@ -349,20 +355,9 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         node.add_action(Action(astar, rew, (1, 0), (terminal_state, terminal_state)))
 
         if rstar < 0 and depth < self.max_depth:
-            clf = DecisionTreeRegressor(
-                max_leaf_nodes=(
-                    max(2, self.cart_nodes_list[depth])
-                    if depth < len(self.cart_nodes_list)
-                    else 2
-                ),
-                random_state=self.random_state,
-            )
-            clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
-
-            masks = clf.tree_.feature >= 0
-            valid_features = clf.tree_.feature[masks]
-            valid_thresholds = clf.tree_.threshold[masks]
-
+            splitter = self.split_generators[depth][0](self.split_generators[depth][1])
+            splits = splitter.split(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
+            valid_features, valid_thresholds = list(zip(*splits))
             lefts = (self.X_[:, valid_features] <= valid_thresholds) & node.nz[
                 :, np.newaxis
             ]
