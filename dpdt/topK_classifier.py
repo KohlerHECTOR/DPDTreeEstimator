@@ -397,7 +397,7 @@ class TopKTreeClassifier(ClassifierMixin, BaseEstimator):
             else:
                 top_k_splits = []
                 seen_feat = []
-                while len(top_k_splits) < self.k and len(sorted_splits) > 0:
+                while len(top_k_splits) < min(self.k, self.X_.shape[1]) and len(sorted_splits) > 0:
                     split = sorted_splits.pop(0)
                     if split[0] not in seen_feat:
                         top_k_splits.append(split)
