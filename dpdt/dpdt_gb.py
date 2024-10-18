@@ -120,6 +120,8 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
             None,
             StrOptions({"best"}),
         ],
+        "xgboost": ["boolean"],
+        "reg_lambda": [Interval(Real, 0, 1, closed="both")],
     }
 
     def __init__(
@@ -131,6 +133,8 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         random_state=42,
         use_default_dt=False,
         n_jobs_dpdt=None,
+        xgboost=False,
+        reg_lambda=0,
     ):
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate
@@ -139,6 +143,8 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         self.random_state = random_state
         self.use_default_dt = use_default_dt
         self.n_jobs_dpdt = n_jobs_dpdt
+        self.xgboost = xgboost
+        self.reg_lambda = reg_lambda
 
     def _is_fitted(self):
         return len(getattr(self, "estimators_", [])) > 0
@@ -196,22 +202,33 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
     ):
         """Fit another stage of ``n_trees_per_iteration_`` trees."""
         original_y = y
-        # Note: We need the negative gradient!
-        neg_gradient = -self._loss.gradient(
+        # Calculate first-order gradient (as before)
+        gradient, hessian = self._loss.gradient_hessian(
             y_true=y,
             raw_prediction=raw_predictions,
         )
+        neg_gradient = -gradient
+
         # 2-d views of shape (n_samples, n_trees_per_iteration_) or (n_samples, 1)
-        # on neg_gradient to simplify the loop over n_trees_per_iteration_.
         if neg_gradient.ndim == 1:
             neg_g_view = neg_gradient.reshape((-1, 1))
+            hess_view = hessian.reshape((-1, 1))
         else:
             neg_g_view = neg_gradient
+            hess_view = hessian
 
         for k in range(self.n_trees_per_iteration_):
             if self._loss.is_multiclass:
                 y = np.array(original_y == k, dtype=np.float64)
-            # induce regression tree on the negative gradient
+
+            # Compute the target for the tree
+            # This is an approximation of the Newton-Raphson step
+            if self.xgboost:
+                target = neg_g_view[:, k] / (hess_view[:, k] + self.reg_lambda)
+            else:
+                target = neg_g_view[:, k]
+
+            # Fit the tree on the target
             if self.use_default_dt:
                 tree = DecisionTreeRegressor(
                     max_depth=self.max_depth,
@@ -226,7 +243,13 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
                     n_jobs=self.n_jobs_dpdt,
                 )
 
-            tree.fit(X, neg_g_view[:, k])
+            # Use sample weights based on the Hessian
+            if self.xgboost:
+                sample_weight = hess_view[:, k]
+            else:
+                sample_weight = None
+
+            tree.fit(X, target, sample_weight=sample_weight)
 
             # add tree to ensemble
             self.estimators_[i, k] = tree
