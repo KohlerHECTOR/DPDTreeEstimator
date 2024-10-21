@@ -401,6 +401,7 @@ class TopKTreeClassifier(ClassifierMixin, BaseEstimator):
                     split = sorted_splits.pop(0)
                     if split[0] not in seen_feat:
                         top_k_splits.append(split)
+                        seen_feat.append(split[0])
 
             # Return only the feature indices and thresholds
             valid_features = np.array([feature for feature, _, _ in top_k_splits])
