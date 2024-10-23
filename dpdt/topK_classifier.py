@@ -369,9 +369,9 @@ class TopKTreeClassifier(ClassifierMixin, BaseEstimator):
             for feature in range(n_features):
                 feature_values = self.X_[node.nz][:, feature]
                 unique_values = np.unique(feature_values)
-                thresholds = (unique_values[:-1] + unique_values[1:]) / 2
+                # thresholds = (unique_values[:-1] + unique_values[1:]) / 2
 
-                for threshold in thresholds:
+                for threshold in unique_values:
                     left_mask = feature_values <= threshold
                     right_mask = ~left_mask
 
@@ -397,7 +397,10 @@ class TopKTreeClassifier(ClassifierMixin, BaseEstimator):
             else:
                 top_k_splits = []
                 seen_feat = []
-                while len(top_k_splits) < min(self.k, self.X_.shape[1]) and len(sorted_splits) > 0:
+                while (
+                    len(top_k_splits) < min(self.k, self.X_.shape[1])
+                    and len(sorted_splits) > 0
+                ):
                     split = sorted_splits.pop(0)
                     if split[0] not in seen_feat:
                         top_k_splits.append(split)
@@ -441,7 +444,7 @@ class TopKTreeClassifier(ClassifierMixin, BaseEstimator):
                 Action(split, np.tile(self._zetas, (2, 1)), (pl, pr), (sl, sr))
                 for split, pl, pr, sl, sr in zip(
                     feat_thresh, p_left, p_right, next_states_left, next_states_right
-                )
+                ) if not(pl == 0 or pr == 0)
             ]
 
             for action in actions:

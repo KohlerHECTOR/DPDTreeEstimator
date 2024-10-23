@@ -195,7 +195,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 (self.X_.min(axis=0) - 1e-3, self.X_.max(axis=0) + 1e-3),
             ),
             nz=np.ones(self.X_.shape[0], dtype=bool),
-            max_action_nb=2 * self.cart_nodes_list[0] + 1,
+            max_action_nb=self.cart_nodes_list[0] + 1,
         )
         self._count_ops = 0
         self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float64)
@@ -396,7 +396,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 Action(split, np.tile(self._zetas, (2, 1)), (pl, pr), (sl, sr))
                 for split, pl, pr, sl, sr in zip(
                     feat_thresh, p_left, p_right, next_states_left, next_states_right
-                )
+                ) if not(pl == 0 or pr == 0)
             ]
 
             for action in actions:

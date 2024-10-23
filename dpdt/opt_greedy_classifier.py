@@ -1,19 +1,35 @@
-"""Dynamic Programming Decision Tree (DPDTree) regressor implementation."""
+"""Dynamic Programming Decision Tree (Opt greedy) classifier implementation."""
 from copy import deepcopy
 from numbers import Integral
 
 import numpy as np
-from sklearn.base import BaseEstimator, MultiOutputMixin, RegressorMixin, _fit_context
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.tree import DecisionTreeRegressor
+from sklearn.base import BaseEstimator, ClassifierMixin, _fit_context
+from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._param_validation import Interval, StrOptions
+from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.parallel import Parallel, delayed
-from sklearn.utils.validation import (
-    _check_sample_weight,
-    check_array,
-    check_is_fitted,
-    check_X_y,
-)
+from sklearn.utils.validation import _check_sample_weight, check_is_fitted
+
+
+def gini_impurity(y):
+    """
+    Compute the Gini impurity of a dataset.
+
+    Parameters
+    ----------
+    y : array-like
+        The target values (class labels) of the dataset.
+
+    Returns
+    -------
+    float
+        The Gini impurity of the dataset.
+    """
+    _, counts = np.unique(y, return_counts=True)
+    probabilities = counts / len(y)
+    gini = 1 - np.sum(probabilities**2)
+    return gini
 
 
 class State:
@@ -76,8 +92,8 @@ class Action:
         self.next_states = next_s
 
 
-class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
-    """Dynamic Programming Decision Tree (DPDTree) regressor.
+class OptGreedyClassifier(ClassifierMixin, BaseEstimator):
+    """Dynamic Programming Decision Tree (DPDTree) classifier.
 
     Parameters
     ----------
@@ -86,9 +102,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
     max_nb_trees : int, default=100
         The maximum number of trees.
     random_state : int, default=42
-        Fixes randomness of the regressor. Randomness happens in the calls to cart.
-    cart_nodes_list : list of int, default=(32,)
-        List containing the number of leaf nodes for the CART trees at each depth.
+        Fixes randomness of the classifier. Randomness happens in the calls to cart.
     n_jobs : int, default=None
         The number of jobs to run in parallel.
 
@@ -119,18 +133,17 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
     Examples
     --------
-    >>> from dpdt import DPDTreeRegressor
-    >>> clf = DPDTreeRegressor()
+    >>> from dpdt import OptGreedyClassifier
+    >>> clf = OptGreedyClassifier()
     >>> clf.fit([[0, 0], [1, 1]], [0, 1])
-    DPDTreeRegressor()
+    OptGreedyClassifier()
     >>> clf.predict([[2., 2.]])
-    array([1.])
+    array([1])
     """
 
     _parameter_constraints = {
         "max_depth": [Interval(Integral, 2, None, closed="left")],
         "max_nb_trees": [Interval(Integral, 1, None, closed="left")],
-        "cart_nodes_list": ["array-like"],
         "random_state": [Interval(Integral, 0, None, closed="left")],
         "n_jobs": [
             Interval(Integral, 1, None, closed="left"),
@@ -143,20 +156,18 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         self,
         max_depth=3,
         max_nb_trees=100,
-        cart_nodes_list=(32,),
         random_state=42,
         n_jobs=None,
     ):
-        """Initialize the DPDTreeRegressor."""
+        """Initialize the OptGreedyClassifier."""
         self.max_depth = max_depth
         self.max_nb_trees = max_nb_trees
-        self.cart_nodes_list = cart_nodes_list
         self.random_state = random_state
         self.n_jobs = n_jobs
 
     @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y, sample_weight=None):
-        """Fit the DPDTreeRegressor to the training data.
+        """Fit the OptGreedyClassifier to the training data.
 
         Parameters
         ----------
@@ -176,19 +187,17 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         self : object
             Returns self.
         """
-        X, y = check_X_y(X, y, y_numeric=True, multi_output=True)
-        self._check_n_features(X, reset=True)
+        X, y = self._validate_data(X, y)
+        check_classification_targets(y)
+
         if sample_weight is not None:
             self._sample_weight = _check_sample_weight(sample_weight, X)
-            if y.squeeze().ndim > 1:
-                raise AssertionError(
-                    "sample weights are not yet supported for multioutput predictions"
-                )
         else:
             self._sample_weight = np.ones(len(X), dtype=np.float32)
 
+        self.classes_ = np.unique(y)
         self.X_ = X
-        self.y_ = y.astype(float)
+        self.y_ = y
 
         if self.max_nb_trees == 1:
             self._zetas = np.zeros(1, dtype=np.float32)
@@ -201,9 +210,8 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
                 (self.X_.min(axis=0) - 1e-3, self.X_.max(axis=0) + 1e-3),
             ),
             nz=np.ones(self.X_.shape[0], dtype=bool),
-            max_action_nb=self.cart_nodes_list[0] + 1,
+            max_action_nb=(self.X_.shape[0] * self.X_.shape[1]) + 1,
         )
-
         self._count_ops = 0
         self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float64)
 
@@ -215,7 +223,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
         This method constructs an MDP using a depth-first search approach. Each node
         in the tree represents a state in the MDP, and actions are determined based
-        on potential splits from a decision tree regressor.
+        on potential splits from a decision tree classifier.
 
         Returns
         -------
@@ -335,33 +343,63 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         State
             The expanded node.
         """
-        astar = np.average(
-            self.y_[node.nz], weights=self._sample_weight[node.nz], axis=0
-        )
-        rstar = -1 * mean_squared_error(
-            self.y_[node.nz],
-            np.tile(astar, (len(self.y_[node.nz]), 1)),
-            sample_weight=self._sample_weight[node.nz],
-        )
+        classes, counts = np.unique(self.y_[node.nz], return_counts=True)
+        weighted_counts = np.zeros_like(counts, dtype=np.float32)
+        for c_idx, c in enumerate(classes):
+            weighted_counts[c_idx] = (
+                self._sample_weight[node.nz][self.y_[node.nz] == c]
+            ).sum()
+        max_idx = np.argmax(weighted_counts)
+        rstar = weighted_counts[max_idx] / self._sample_weight[node.nz].sum() - 1.0
+        astar = classes[max_idx]
+
         rew = np.full((2, self.max_nb_trees), rstar, dtype=np.float32)
 
         terminal_state = State(label=self._terminal_state, nz=[0], is_terminal=True)
         node.add_action(Action(astar, rew, (1, 0), (terminal_state, terminal_state)))
 
         if rstar < 0 and depth < self.max_depth:
-            clf = DecisionTreeRegressor(
-                max_leaf_nodes=(
-                    max(2, self.cart_nodes_list[depth])
-                    if depth < len(self.cart_nodes_list)
-                    else 2
-                ),
-                random_state=self.random_state,
-            )
-            clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
+            if depth == 0:
+                n_features = self.X_.shape[1]
+                splits = []
 
-            masks = clf.tree_.feature >= 0
-            valid_features = clf.tree_.feature[masks]
-            valid_thresholds = clf.tree_.threshold[masks]
+                for feature in range(n_features):
+                    feature_values = self.X_[node.nz][:, feature]
+                    unique_values = np.unique(feature_values)
+                    # thresholds = (unique_values[:-1] + unique_values[1:]) / 2
+
+                    for threshold in unique_values:
+                        left_mask = feature_values <= threshold
+                        right_mask = ~left_mask
+
+                        left_gini = gini_impurity(self.y_[node.nz][left_mask])
+                        right_gini = gini_impurity(self.y_[node.nz][right_mask])
+
+                        n_left = np.sum(left_mask)
+                        n_right = np.sum(right_mask)
+                        n_total = len(self.y_[node.nz])
+
+                        weighted_gini = (n_left / n_total) * left_gini + (
+                            n_right / n_total
+                        ) * right_gini
+
+                        splits.append((feature, threshold, weighted_gini))
+                # Return only the feature indices and thresholds
+                valid_features = np.array([feature for feature, _, _ in splits])
+                valid_thresholds = np.array([threshold for _, threshold, _ in splits])
+
+            else:
+                clf = DecisionTreeClassifier(
+                    max_leaf_nodes=2,
+                    random_state=self.random_state,
+                )
+                clf.fit(
+                    self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz]
+                )
+
+                masks = clf.tree_.feature >= 0
+                valid_features = clf.tree_.feature[masks]
+                valid_thresholds = clf.tree_.threshold[masks]
 
             lefts = (self.X_[:, valid_features] <= valid_thresholds) & node.nz[
                 :, np.newaxis
@@ -382,11 +420,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
                 valid_thresholds
             )
-            act_max = (
-                2 * self.cart_nodes_list[depth + 1]
-                if depth + 1 < len(self.cart_nodes_list)
-                else 1
-            )
+            act_max = 2
 
             next_states_left = [
                 State(obs, nz, max_action_nb=act_max + 1)
@@ -423,7 +457,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             The predicted class labels.
         """
         check_is_fitted(self)
-        X = check_array(X)
+        X = self._validate_data(X, reset=False)
         return self._predict_zeta(X, -1)[0]  # just scores, not lengths
 
     def _predict_zeta(self, X, zeta_index):
@@ -444,10 +478,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             The average number of decision nodes traversed.
         """
         init_a = self._trees[tuple(self._root.obs.tolist() + [0])][zeta_index]
-        if self.y_.ndim > 1:
-            y_pred = np.zeros((len(X), self.y_.shape[1]), dtype=self.y_.dtype)
-        else:
-            y_pred = np.zeros((len(X)), dtype=self.y_.dtype)
+        y_pred = np.zeros(len(X), dtype=self.y_.dtype)
         lengths = np.zeros(X.shape[0], dtype=np.float32)
         for i, x in enumerate(X):
             a = init_a
@@ -496,6 +527,6 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         )(delayed(self._predict_zeta)(X, z) for z in range(len(self._zetas)))
 
         for z, pred_length in enumerate(results):
-            scores[z] = (r2_score(y, pred_length[0]),)
+            scores[z] = accuracy_score(y, pred_length[0])
             decision_path_length[z] = pred_length[1]
         return scores, decision_path_length
