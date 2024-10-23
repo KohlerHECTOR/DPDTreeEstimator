@@ -365,7 +365,7 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
             splits = []
             for feat in range(quantile_features.shape[1]):
                 feature_values = self.X_[node.nz][:, feat]
-                for threshold in np.unique(quantile_features[feat]):
+                for threshold in np.unique(quantile_features[:, feat]):
                     left_mask = feature_values <= threshold
                     right_mask = ~left_mask
 

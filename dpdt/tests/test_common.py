@@ -75,5 +75,5 @@ def test_check_estimator_quantile(max_depth, max_nb_trees, k, n_jobs):
 @pytest.mark.parametrize("max_depth", [2, 3])
 @pytest.mark.parametrize("max_nb_trees", [1, 10])
 @pytest.mark.parametrize("n_jobs", [None, 4])
-def test_check_estimator_optgreedy(max_depth, max_nb_trees, k, n_jobs):
-    check_estimator(OptGreedyClassifier(max_depth, max_nb_trees, k, n_jobs=n_jobs))
+def test_check_estimator_optgreedy(max_depth, max_nb_trees, n_jobs):
+    check_estimator(OptGreedyClassifier(max_depth, max_nb_trees, n_jobs=n_jobs))
