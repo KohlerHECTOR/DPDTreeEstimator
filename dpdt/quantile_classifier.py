@@ -360,8 +360,10 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
         node.add_action(Action(astar, rew, (1, 0), (terminal_state, terminal_state)))
 
         if rstar < 0 and depth < self.max_depth:
-            qs = [i/10 for i in range(1, 10)]
-            quantile_features = np.array([np.quantile(self.X_[node.nz], q=Q, axis=0) for Q in qs])
+            qs = [i / 10 for i in range(1, 10)]
+            quantile_features = np.array(
+                [np.quantile(self.X_[node.nz], q=Q, axis=0) for Q in qs]
+            )
             splits = []
             for feat in range(quantile_features.shape[1]):
                 feature_values = self.X_[node.nz][:, feat]
@@ -426,7 +428,8 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
                 Action(split, np.tile(self._zetas, (2, 1)), (pl, pr), (sl, sr))
                 for split, pl, pr, sl, sr in zip(
                     feat_thresh, p_left, p_right, next_states_left, next_states_right
-                ) if not(pl == 0 or pr == 0)
+                )
+                if not (pl == 0 or pr == 0)
             ]
 
             for action in actions:

@@ -396,7 +396,8 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 Action(split, np.tile(self._zetas, (2, 1)), (pl, pr), (sl, sr))
                 for split, pl, pr, sl, sr in zip(
                     feat_thresh, p_left, p_right, next_states_left, next_states_right
-                ) if not(pl == 0 or pr == 0)
+                )
+                if not (pl == 0 or pr == 0)
             ]
 
             for action in actions:
