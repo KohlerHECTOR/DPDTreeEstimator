@@ -378,7 +378,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 valid_thresholds
             )
             act_max = (
-                2 * self.cart_nodes_list[depth + 1]
+                self.cart_nodes_list[depth + 1]
                 if depth + 1 < len(self.cart_nodes_list)
                 else 1
             )

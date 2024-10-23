@@ -429,7 +429,7 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
             next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
                 valid_thresholds
             )
-            act_max = len(feat_thresh)
+            act_max = self.k
 
             next_states_left = [
                 State(obs, nz, max_action_nb=act_max + 1)
