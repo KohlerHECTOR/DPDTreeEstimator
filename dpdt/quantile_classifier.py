@@ -488,10 +488,10 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
                 a = self._trees[tuple(o.tolist() + [H])][zeta_index]
             lengths[i] = H
             y_pred[i] = a
-        return (y_pred, lengths.mean())
+        return (y_pred, lengths.mean(), lengths.max())
 
     def get_pareto_front(self, X, y):
-        """Compute the decision path lengths / test accuracy Pareto front of TopKTrees.
+        """Compute the decision path lengths / test accuracy Pareto front of DPDTrees.
 
         Parameters
         ----------
@@ -509,6 +509,7 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
         """
         scores = np.zeros(len(self._zetas), dtype=np.float32)
         decision_path_length = np.zeros(len(self._zetas), dtype=np.float32)
+        decision_path_max_depth = np.zeros(len(self._zetas), dtype=np.int32)
 
         if self.n_jobs == "best":
             n_jobs = max(1, len(self._zetas))
@@ -523,4 +524,6 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
         for z, pred_length in enumerate(results):
             scores[z] = accuracy_score(y, pred_length[0])
             decision_path_length[z] = pred_length[1]
-        return scores, decision_path_length
+            decision_path_max_depth[z] = pred_length[2]
+
+        return scores, decision_path_length, decision_path_max_depth
