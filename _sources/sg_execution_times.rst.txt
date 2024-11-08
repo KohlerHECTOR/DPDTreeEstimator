@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**01:22.862** total execution time for 4 files **from all galleries**:
+**01:25.127** total execution time for 4 files **from all galleries**:
 
 .. container::
 
@@ -33,14 +33,14 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_examples_plot_gradient_boosting_comparison.py` (``../examples/plot_gradient_boosting_comparison.py``)
-     - 01:19.284
+     - 01:21.469
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_classifier_comparison.py` (``../examples/plot_classifier_comparison.py``)
-     - 00:02.197
+     - 00:02.269
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_pathological_tree_classif.py` (``../examples/plot_pathological_tree_classif.py``)
-     - 00:01.233
+     - 00:01.240
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_classifier.py` (``../examples/plot_classifier.py``)
-     - 00:00.147
+     - 00:00.148
      - 0.0
