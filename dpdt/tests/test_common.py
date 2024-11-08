@@ -52,6 +52,16 @@ def test_check_estimator(max_depth, max_nb_trees, cart_nodes_list, n_jobs):
     )
 
 
+# @pytest.mark.parametrize("max_depth", [2, 3])
+# @pytest.mark.parametrize("max_nb_trees", [1, 10])
+# @pytest.mark.parametrize("kmeans_centers_list", [(3,), (3, 3, 1)])
+# @pytest.mark.parametrize("n_jobs", [None, 4])
+# def test_check_estimator_kmeans(max_depth, max_nb_trees, kmeans_centers_list, n_jobs):
+#     check_estimator(
+#         DrTTreeClassifier(max_depth, max_nb_trees, kmeans_centers_list, n_jobs=n_jobs)
+#     )
+
+
 @pytest.mark.parametrize("max_depth", [2, 3])
 @pytest.mark.parametrize("max_nb_trees", [1, 10])
 @pytest.mark.parametrize("k", [2, 3])
