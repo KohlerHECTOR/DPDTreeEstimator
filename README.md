@@ -11,5 +11,3 @@ Dynamic Programming Decision Trees
 ![Pathological Problem](examples/patho_bounds_comparison.png)
 ### Comparison of different classifiers.
 ![Classifier Comparison](examples/compare_classif.png)
-### Gradient Boosting
-![GB Comparison](examples/gb_boosting_compare.png)

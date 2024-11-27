@@ -1,12 +1,12 @@
 """Dynamic Programming Decision Tree (DPDTree) classifier implementation."""
 from copy import deepcopy
-from numbers import Integral
+from numbers import Integral, Real
 
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, _fit_context
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils._param_validation import Interval, StrOptions
+from sklearn.utils._param_validation import Interval, StrOptions, RealNotInt
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight, check_is_fitted
@@ -88,6 +88,64 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
     n_jobs : int, default=None
         The number of jobs to run in parallel.
 
+    min_samples_split : int or float, default=2
+        The minimum number of samples required to split an internal node:
+
+        - If int, then consider `min_samples_split` as the minimum number.
+        - If float, then `min_samples_split` is a fraction and
+          `ceil(min_samples_split * n_samples)` are the minimum
+          number of samples for each split.
+
+    min_samples_leaf : int or float, default=1
+        The minimum number of samples required to be at a leaf node.
+        A split point at any depth will only be considered if it leaves at
+        least ``min_samples_leaf`` training samples in each of the left and
+        right branches.  This may have the effect of smoothing the model,
+        especially in regression.
+
+        - If int, then consider `min_samples_leaf` as the minimum number.
+        - If float, then `min_samples_leaf` is a fraction and
+          `ceil(min_samples_leaf * n_samples)` are the minimum
+          number of samples for each node.
+
+    min_weight_fraction_leaf : float, default=0.0
+        The minimum weighted fraction of the sum total of weights (of all
+        the input samples) required to be at a leaf node. Samples have
+        equal weight when sample_weight is not provided.
+
+    max_features : int, float or {"sqrt", "log2"}, default=None
+        The number of features to consider when looking for the best split:
+
+        - If int, then consider `max_features` features at each split.
+        - If float, then `max_features` is a fraction and
+          `max(1, int(max_features * n_features_in_))` features are considered at
+          each split.
+        - If "sqrt", then `max_features=sqrt(n_features)`.
+        - If "log2", then `max_features=log2(n_features)`.
+        - If None, then `max_features=n_features`.
+
+        .. note::
+
+            The search for a split does not stop until at least one
+            valid partition of the node samples is found, even if it requires to
+            effectively inspect more than ``max_features`` features.
+
+    min_impurity_decrease : float, default=0.0
+        A node will be split if this split induces a decrease of the impurity
+        greater than or equal to this value.
+
+        The weighted impurity decrease equation is the following::
+
+            N_t / N * (impurity - N_t_R / N_t * right_impurity
+                                - N_t_L / N_t * left_impurity)
+
+        where ``N`` is the total number of samples, ``N_t`` is the number of
+        samples at the current node, ``N_t_L`` is the number of samples in the
+        left child, and ``N_t_R`` is the number of samples in the right child.
+
+        ``N``, ``N_t``, ``N_t_R`` and ``N_t_L`` all refer to the weighted sum,
+        if ``sample_weight`` is passed.
+
     Attributes
     ----------
     X_ : ndarray, shape (n_samples, n_features)
@@ -124,10 +182,26 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
     """
 
     _parameter_constraints = {
-        "max_depth": [Interval(Integral, 2, None, closed="left")],
         "max_nb_trees": [Interval(Integral, 1, None, closed="left")],
         "cart_nodes_list": ["array-like"],
-        "random_state": [Interval(Integral, 0, None, closed="left")],
+        "max_depth": [Interval(Integral, 1, None, closed="left"), None],
+        "min_samples_split": [
+            Interval(Integral, 2, None, closed="left"),
+            Interval(RealNotInt, 0.0, 1.0, closed="right"),
+        ],
+        "min_samples_leaf": [
+            Interval(Integral, 1, None, closed="left"),
+            Interval(RealNotInt, 0.0, 1.0, closed="neither"),
+        ],
+        "min_weight_fraction_leaf": [Interval(Real, 0.0, 0.5, closed="both")],
+        "max_features": [
+            Interval(Integral, 1, None, closed="left"),
+            Interval(RealNotInt, 0.0, 1.0, closed="right"),
+            StrOptions({"sqrt", "log2"}),
+            None,
+        ],
+        "random_state": ["random_state"],
+        "min_impurity_decrease": [Interval(Real, 0.0, None, closed="left")],
         "n_jobs": [
             Interval(Integral, 1, None, closed="left"),
             None,
@@ -137,11 +211,16 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
     def __init__(
         self,
-        max_depth=3,
-        max_nb_trees=100,
+        max_depth=10,
+        max_nb_trees=1,
         cart_nodes_list=(32,),
-        random_state=42,
+        random_state=None,
         n_jobs=None,
+        min_samples_split=2,
+        min_samples_leaf=1,
+        min_weight_fraction_leaf=0.0,
+        max_features=None,
+        min_impurity_decrease=0.0,
     ):
         """Initialize the DPDTreeClassifier."""
         self.max_depth = max_depth
@@ -149,6 +228,11 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         self.cart_nodes_list = cart_nodes_list
         self.random_state = random_state
         self.n_jobs = n_jobs
+        self.min_samples_split = min_samples_split
+        self.min_samples_leaf = min_samples_leaf
+        self.min_weight_fraction_leaf = min_weight_fraction_leaf
+        self.max_features = max_features
+        self.min_impurity_decrease = min_impurity_decrease
 
     @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y, sample_weight=None):
@@ -344,14 +428,21 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         node.add_action(Action(astar, rew, (1, 0), (terminal_state, terminal_state)))
 
         if rstar < 0 and depth < self.max_depth:
-            clf = DecisionTreeClassifier(
-                max_leaf_nodes=(
-                    max(2, self.cart_nodes_list[depth])
-                    if depth < len(self.cart_nodes_list)
-                    else 2
-                ),
-                random_state=self.random_state,
-            )
+            if depth < len(self.cart_nodes_list):
+                clf = DecisionTreeClassifier(
+                    max_leaf_nodes=max(2, self.cart_nodes_list[depth]),
+                    random_state=self.random_state,
+                    min_samples_split=self.min_samples_split,
+                    min_impurity_decrease=self.min_impurity_decrease,
+                    min_samples_leaf=self.min_samples_leaf,
+                    min_weight_fraction_leaf=self.min_weight_fraction_leaf,
+                    max_features=self.max_features,
+                )
+            else:
+                clf = DecisionTreeClassifier(
+                    max_leaf_nodes=2, 
+                    random_state=self.random_state
+                )
             clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
 
             masks = clf.tree_.feature >= 0
@@ -442,11 +533,14 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         init_a = self._trees[tuple(self._root.obs.tolist() + [0])][zeta_index]
         y_pred = np.zeros(len(X), dtype=self.y_.dtype)
         lengths = np.zeros(X.shape[0], dtype=np.float32)
+        nodes_ = [init_a] 
         for i, x in enumerate(X):
             a = init_a
             o = self._root.obs.copy()
             H = 0
             while isinstance(a, tuple):  # a is int implies leaf node
+                if a not in nodes_:
+                    nodes_.append(a)
                 feature, threshold = a
                 H += 1
                 if x[feature] <= threshold:
@@ -456,7 +550,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 a = self._trees[tuple(o.tolist() + [H])][zeta_index]
             lengths[i] = H
             y_pred[i] = a
-        return (y_pred, lengths.mean(), lengths.max())
+        return (y_pred, lengths.mean(), lengths.max(), len(nodes_))
 
     def get_pareto_front(self, X, y):
         """Compute the decision path lengths / test accuracy Pareto front of DPDTrees.
@@ -478,6 +572,8 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         scores = np.zeros(len(self._zetas), dtype=np.float32)
         decision_path_length = np.zeros(len(self._zetas), dtype=np.float32)
         decision_path_max_depth = np.zeros(len(self._zetas), dtype=np.int32)
+        decision_path_nodes = np.zeros(len(self._zetas), dtype=np.int32)
+
 
         if self.n_jobs == "best":
             n_jobs = max(1, len(self._zetas))
@@ -493,5 +589,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             scores[z] = accuracy_score(y, pred_length[0])
             decision_path_length[z] = pred_length[1]
             decision_path_max_depth[z] = pred_length[2]
+            decision_path_nodes[z] = pred_length[3]
 
-        return scores, decision_path_length, decision_path_max_depth
+
+        return scores, decision_path_length, decision_path_max_depth, decision_path_nodes
