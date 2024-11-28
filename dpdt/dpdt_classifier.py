@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, _fit_context
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.utils._param_validation import Interval, StrOptions, RealNotInt
+from sklearn.utils._param_validation import Interval, RealNotInt, StrOptions
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import _check_sample_weight, check_is_fitted
@@ -440,8 +440,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 )
             else:
                 clf = DecisionTreeClassifier(
-                    max_leaf_nodes=2, 
-                    random_state=self.random_state
+                    max_leaf_nodes=2, random_state=self.random_state
                 )
             clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
 
@@ -533,7 +532,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         init_a = self._trees[tuple(self._root.obs.tolist() + [0])][zeta_index]
         y_pred = np.zeros(len(X), dtype=self.y_.dtype)
         lengths = np.zeros(X.shape[0], dtype=np.float32)
-        nodes_ = [init_a] 
+        nodes_ = [init_a]
         for i, x in enumerate(X):
             a = init_a
             o = self._root.obs.copy()
@@ -574,7 +573,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         decision_path_max_depth = np.zeros(len(self._zetas), dtype=np.int32)
         decision_path_nodes = np.zeros(len(self._zetas), dtype=np.int32)
 
-
         if self.n_jobs == "best":
             n_jobs = max(1, len(self._zetas))
         else:
@@ -591,5 +589,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             decision_path_max_depth[z] = pred_length[2]
             decision_path_nodes[z] = pred_length[3]
 
-
-        return scores, decision_path_length, decision_path_max_depth, decision_path_nodes
+        return (
+            scores,
+            decision_path_length,
+            decision_path_max_depth,
+            decision_path_nodes,
+        )

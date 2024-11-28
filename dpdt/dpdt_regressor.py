@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, MultiOutputMixin, RegressorMixin, _fit_context
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.utils._param_validation import Interval, StrOptions, RealNotInt
+from sklearn.utils._param_validation import Interval, RealNotInt, StrOptions
 from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import (
     _check_sample_weight,
@@ -445,8 +445,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
                 )
             else:
                 clf = DecisionTreeRegressor(
-                    max_leaf_nodes=2, 
-                    random_state=self.random_state
+                    max_leaf_nodes=2, random_state=self.random_state
                 )
             clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
 
@@ -598,5 +597,9 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             decision_path_max_depth[z] = pred_length[2]
             decision_path_nodes[z] = pred_length[3]
 
-
-        return scores, decision_path_length, decision_path_max_depth, decision_path_nodes
+        return (
+            scores,
+            decision_path_length,
+            decision_path_max_depth,
+            decision_path_nodes,
+        )
