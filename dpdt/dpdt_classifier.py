@@ -440,7 +440,13 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                 )
             else:
                 clf = DecisionTreeClassifier(
-                    max_leaf_nodes=2, random_state=self.random_state
+                    max_leaf_nodes=2,
+                    random_state=self.random_state,
+                    min_samples_split=self.min_samples_split,
+                    min_impurity_decrease=self.min_impurity_decrease,
+                    min_samples_leaf=self.min_samples_leaf,
+                    min_weight_fraction_leaf=self.min_weight_fraction_leaf,
+                    max_features=self.max_features,
                 )
             clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
 
