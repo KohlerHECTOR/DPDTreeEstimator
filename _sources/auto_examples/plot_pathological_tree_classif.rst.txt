@@ -28,7 +28,7 @@ A Dataset where the base :class:`sklearn.tree.DecisionTreeClassifier` fails.
 
 
 .. image-sg:: /auto_examples/images/sphx_glr_plot_pathological_tree_classif_001.png
-   :alt: Pathological Dataset   , Decision Tree Accuracy: 75.55% Time: 0.0079s, DP Decision Tree Accuracy: 100.0% Time: 0.1142s, Opt Decision Tree Accuracy: 100% Time: 92s
+   :alt: Pathological Dataset   , Decision Tree Accuracy: 75.55% Time: 0.0079s, DP Decision Tree Accuracy: 100.0% Time: 0.1158s, Opt Decision Tree Accuracy: 100% Time: 92s
    :srcset: /auto_examples/images/sphx_glr_plot_pathological_tree_classif_001.png
    :class: sphx-glr-single-img
 
@@ -140,7 +140,7 @@ A Dataset where the base :class:`sklearn.tree.DecisionTreeClassifier` fails.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.225 seconds)
+   **Total running time of the script:** (0 minutes 1.234 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_pathological_tree_classif.py:
