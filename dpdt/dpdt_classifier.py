@@ -9,7 +9,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils._param_validation import Interval, RealNotInt, StrOptions
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.parallel import Parallel, delayed
-from sklearn.utils.validation import _check_sample_weight, check_is_fitted
+from sklearn.utils.validation import _check_sample_weight, check_is_fitted, validate_data
 
 
 class State:
@@ -256,7 +256,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         self : object
             Returns self.
         """
-        X, y = self._validate_data(X, y)
+        X, y = self.validate_data(X, y)
         check_classification_targets(y)
 
         if sample_weight is not None:
@@ -515,7 +515,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             The predicted class labels.
         """
         check_is_fitted(self)
-        X = self._validate_data(X, reset=False)
+        X = self.validate_data(X, reset=False)
         return self._predict_zeta(X, -1)[0]  # just scores, not lengths
 
     def _predict_zeta(self, X, zeta_index):
