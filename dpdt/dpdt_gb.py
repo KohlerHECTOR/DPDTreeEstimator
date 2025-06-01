@@ -169,7 +169,7 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
         self : object
             Returns self.
         """
-        X, y = self.validate_data(X, y, dtype=DTYPE, multi_output=True)
+        X, y = validate_data(X, y, dtype=DTYPE, multi_output=True)
         y = self._encode_y(y)
         self.estimators_ = np.empty(
             (self.n_estimators, self.n_trees_per_iteration_), dtype=object
@@ -369,7 +369,7 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
             ``k == 1``, otherwise ``k==n_classes``.
         """
         if check_input:
-            X = self.validate_data(X, dtype=DTYPE, order="C", reset=False)
+            X = validate_data(X, dtype=DTYPE, order="C", reset=False)
         raw_predictions = self._raw_predict_init(X)
         for i in range(self.estimators_.shape[0]):
             raw_predictions = predict_stage(
@@ -401,7 +401,7 @@ class GradientBoostingDPDTClassifier(ClassifierMixin, BaseEstimator):
             :term:`classes_`. Regression and binary classification produce an
             array of shape (n_samples,).
         """
-        X = self.validate_data(X, dtype=DTYPE, order="C", reset=False)
+        X = validate_data(X, dtype=DTYPE, order="C", reset=False)
         raw_predictions = self._raw_predict(X)
         if raw_predictions.shape[1] == 1:
             return raw_predictions.ravel()
