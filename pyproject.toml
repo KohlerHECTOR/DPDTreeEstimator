@@ -38,8 +38,8 @@ channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 
 [tool.pixi.dependencies]
-python = ">=3.9"
-scikit-learn = ">=1.4.2"
+python = ">=3.10"
+scikit-learn = ">=1.6"
 
 [tool.pixi.pypi-dependencies]
 dpdt = { path=".", editable=true }
