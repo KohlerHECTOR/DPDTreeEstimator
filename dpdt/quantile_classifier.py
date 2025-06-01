@@ -8,7 +8,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.utils._param_validation import Interval, StrOptions
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.parallel import Parallel, delayed
-from sklearn.utils.validation import check_is_fitted
+from sklearn.utils.validation import check_is_fitted, validate_data
 
 
 def gini_impurity(y):
@@ -191,7 +191,7 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
         self : object
             Returns self.
         """
-        X, y = self._validate_data(X, y)
+        X, y = self.validate_data(X, y)
         check_classification_targets(y)
 
         self._sample_weight = np.ones(len(X), dtype=np.float32)
@@ -451,7 +451,7 @@ class QuantileClassifier(ClassifierMixin, BaseEstimator):
             The predicted class labels.
         """
         check_is_fitted(self)
-        X = self._validate_data(X, reset=False)
+        X = self.validate_data(X, reset=False)
         return self._predict_zeta(X, -1)[0]  # just scores, not lengths
 
     def _predict_zeta(self, X, zeta_index):
