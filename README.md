@@ -28,7 +28,5 @@ assert DPDT.score(X_train, y_train) >= CART.score(X_train, y_train), 'DPDT does 
 print(f'CART test accuracy={CART.score(X_test, y_test)}')
 print(f'DPDT test accuracy={DPDT.score(X_test, y_test)}')
 ```
-### A pathological classification problem for trees.
-![Pathological Problem](examples/patho_bounds_comparison.png)
 ### Comparison of different classifiers.
 ![Classifier Comparison](examples/compare_classif.png)
