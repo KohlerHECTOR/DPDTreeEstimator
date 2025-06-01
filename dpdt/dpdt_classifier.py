@@ -213,7 +213,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         self,
         max_depth=10,
         max_nb_trees=1,
-        cart_nodes_list=(32,),
+        cart_nodes_list=(8,3,),
         random_state=None,
         n_jobs=None,
         min_samples_split=2,
