@@ -13,7 +13,7 @@ pip install git+https://github.com/KohlerHECTOR/DPDTreeEstimator
 ```python
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.trees import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier
 from dpdt import DPDTreeClassifier
 
 X, y = load_iris(return_X_y=True)
