@@ -11,7 +11,7 @@ from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import (
     _check_sample_weight,
     check_is_fitted,
-    validate_data,    
+    validate_data,
 )
 
 
@@ -181,7 +181,12 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
     >>> clf.fit([[0, 0], [1, 1]], [[0], [1]])
     DPDTreeRegressor()
     >>> clf.predict([[2., 2.]])
-    array([1.])
+    array([[1.]])
+    >>> clf.fit([[0, 0], [1, 1]], [[0, 0], [1, 1]])
+    DPDTreeRegressor()
+    >>> clf.predict([[0., 0], [2., 2.]])
+    array([[0., 0.],
+           [1., 1.]])
     """
 
     _parameter_constraints = {
@@ -216,7 +221,10 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         self,
         max_depth=10,
         max_nb_trees=1,
-        cart_nodes_list=(8,3,),
+        cart_nodes_list=(
+            8,
+            3,
+        ),
         random_state=None,
         n_jobs=None,
         min_samples_split=2,
@@ -259,8 +267,8 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         self : object
             Returns self.
         """
-        X, y = validate_data(self, X, y)
-        
+        X, y = validate_data(self, X, y, multi_output=True, y_numeric=True)
+
         if sample_weight is not None:
             self._sample_weight = _check_sample_weight(sample_weight, X)
             if y.squeeze().ndim > 1:
@@ -469,9 +477,9 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             next_obs_left[
                 np.arange(len(feat_thresh)), self.X_.shape[1] + valid_features
             ] = valid_thresholds
-            next_obs_right[
-                np.arange(len(feat_thresh)), valid_features
-            ] = valid_thresholds
+            next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
+                valid_thresholds
+            )
             act_max = (
                 self.cart_nodes_list[depth + 1]
                 if depth + 1 < len(self.cart_nodes_list)
@@ -514,7 +522,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             The predicted class labels.
         """
         check_is_fitted(self)
-        X = validate_data(self, X, y='no_validation', reset=False)
+        X = validate_data(self, X, y="no_validation", reset=False)
         return self._predict_zeta(X, -1)[0]  # just scores, not lengths
 
     def _predict_zeta(self, X, zeta_index):

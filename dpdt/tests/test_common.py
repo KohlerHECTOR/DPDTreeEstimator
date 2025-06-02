@@ -9,6 +9,7 @@ from dpdt import (
 # parametrize_with_checks allows to get a generator of check that is more fine-grained
 # than check_estimator
 
+
 @pytest.mark.parametrize("max_depth", [2, 3])
 @pytest.mark.parametrize("max_nb_trees", [1, 10])
 @pytest.mark.parametrize("cart_nodes_list", [(3,), (3, 3, 1)])

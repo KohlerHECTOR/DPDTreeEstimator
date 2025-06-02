@@ -477,9 +477,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             next_obs_left[
                 np.arange(len(feat_thresh)), self.X_.shape[1] + valid_features
             ] = valid_thresholds
-            next_obs_right[
-                np.arange(len(feat_thresh)), valid_features
-            ] = valid_thresholds
+            next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
+                valid_thresholds
+            )
             act_max = (
                 self.cart_nodes_list[depth + 1]
                 if depth + 1 < len(self.cart_nodes_list)
@@ -522,7 +522,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             The predicted class labels.
         """
         check_is_fitted(self)
-        X = validate_data(self, X, y='no_validation', reset=False)
+        X = validate_data(self, X, y="no_validation", reset=False)
         return self._predict_zeta(X, -1)[0]  # just scores, not lengths
 
     def _predict_zeta(self, X, zeta_index):

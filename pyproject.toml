@@ -52,7 +52,7 @@ ruff = "0.4.2"
 
 [tool.pixi.feature.lint.tasks]
 black = { cmd = "black --check --diff dpdt && black --check --diff examples" }
-ruff = { cmd = "ruff check --output-format=full dpdt && ruff check --output-format=full examples" }
+ruff = { cmd = "ruff check --fix --output-format=full dpdt && ruff check --fix --output-format=full examples" }
 lint = { depends_on = ["black", "ruff"]}
 
 [tool.pixi.feature.test.dependencies]
@@ -85,7 +85,7 @@ dev = ["doc", "lint", "test"]
 
 [tool.black]
 line-length = 88
-target_version = ['py38', 'py39', 'py310']
+target_version = ['py310']
 preview = true
 exclude = '''
 /(
@@ -99,7 +99,7 @@ force-exclude = "dpdt/_version.py"
 [tool.ruff]
 # max line length for black
 line-length = 88
-target-version = "py38"
+target-version = "py310"
 exclude=[
     ".git",
     "__pycache__",
