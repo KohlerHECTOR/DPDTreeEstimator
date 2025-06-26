@@ -305,11 +305,6 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         -------
         dict
             A dictionary representing the tree policies.
-
-        References
-        ----------
-        .. [1] H. Kohler et. al., "Interpretable Decision Tree Search as a Markov
-               Decision Process" arXiv https://arxiv.org/abs/2309.12701.
         """
         # BFS
         root = self._expand_node(self._root, 0)
