@@ -36,7 +36,6 @@ class AdaBoostDPDT(AdaBoostClassifier):
             ),
             n_estimators=n_estimators,
             learning_rate=learning_rate,
-            algorithm=algorithm,
             random_state=random_state,
         )
         self.max_depth = max_depth
