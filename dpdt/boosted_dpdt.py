@@ -6,7 +6,7 @@ from .dpdt_classifier import DPDTreeClassifier
 class AdaBoostDPDT(AdaBoostClassifier):
     def __init__(
         self,
-        max_depth=3,
+        max_depth=1,
         min_samples_split=2,
         min_impurity_decrease=0,
         cart_nodes_list=(
@@ -20,7 +20,6 @@ class AdaBoostDPDT(AdaBoostClassifier):
         n_jobs=None,
         n_estimators=50,
         learning_rate=1,
-        algorithm="SAMME",
     ):
         super().__init__(
             estimator=DPDTreeClassifier(
