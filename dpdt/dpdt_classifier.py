@@ -518,9 +518,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         """
         check_is_fitted(self)
         X = validate_data(self, X, y="no_validation", reset=False)
-        return self._predict_zeta(X, -1)[0]  # just scores, not lengths
+        return self._predict_zeta(X, -1, no_stats=True)[0]  # just scores, not lengths
 
-    def _predict_zeta(self, X, zeta_index):
+    def _predict_zeta(self, X, zeta_index, no_stats=False):
         """Predict class for X using a specific zeta index.
 
         Parameters
@@ -546,8 +546,9 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
             o = self._root.obs.copy()
             H = 0
             while isinstance(a, tuple):  # a is int implies leaf node
-                if a not in nodes_:
-                    nodes_.append(a)
+                if not no_stats:
+                    if a not in nodes_:
+                        nodes_.append(a)
                 feature, threshold = a
                 H += 1
                 if x[feature] <= threshold:
