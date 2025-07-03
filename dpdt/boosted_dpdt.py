@@ -162,20 +162,9 @@ class BaseWeightBoosting(BaseEnsemble, metaclass=ABCMeta):
             if self.time_limit is not None:
                 elapsed_time = time() - start_time
                 if elapsed_time >= self.time_limit:
-                    if iboost == 0:
-                        raise ValueError(
-                            "Time limit reached before any estimator could be fitted. "
-                            "Consider increasing the time_limit or using a simpler estimator."
-                        )
-                    warnings.warn(
-                        f"Time limit of {self.time_limit:.2f} seconds reached after "
-                        f"fitting {iboost} estimators. "
-                        f"Training stopped early.",
-                        UserWarning,
-                        stacklevel=2,
-                    )
+                    print(f"Time limit reached. Fitted {iboost} estimators.")
                     break
-            
+
             # avoid extremely small sample weight, for details see issue #20320
             sample_weight = np.clip(sample_weight, a_min=epsilon, a_max=None)
             # do not clip sample weights that were exactly zero originally
@@ -863,58 +852,6 @@ class AdaBoostClassifier(
 
 
 class AdaBoostDPDT(AdaBoostClassifier):
-    """An AdaBoost classifier using DPD (Decision Path Decomposition) trees.
-    
-    This class implements AdaBoost with DPDTreeClassifier as the base estimator.
-    DPD trees are a variant of decision trees that use decision path decomposition
-    for improved interpretability and performance.
-    
-    Parameters
-    ----------
-    max_depth : int, default=1
-        The maximum depth of the tree. If None, then nodes are expanded until
-        all leaves are pure or until all leaves contain less than
-        min_samples_split samples.
-        
-    min_samples_split : int or float, default=2
-        The minimum number of samples required to split an internal node.
-        
-    min_impurity_decrease : float, default=0.0
-        A node will be split if this split induces a decrease of the impurity
-        greater than or equal to this value.
-        
-    cart_nodes_list : tuple, default=(8, 3)
-        A tuple specifying the number of CART nodes to use in the DPD tree.
-        
-    min_samples_leaf : int or float, default=1
-        The minimum number of samples required to be at a leaf node.
-        
-    min_weight_fraction_leaf : float, default=0.0
-        The minimum weighted fraction of the sum total of weights required
-        to be at a leaf node.
-        
-    max_features : int, float or {"sqrt", "log2"}, default=None
-        The number of features to consider when looking for the best split.
-        
-    random_state : int, RandomState instance or None, default=None
-        Controls the randomness of the estimator.
-        
-    n_jobs : int, default=None
-        The number of jobs to run in parallel for both fit and predict.
-        
-    n_estimators : int, default=50
-        The maximum number of estimators at which boosting is terminated.
-        In case of perfect fit, the learning procedure is stopped early.
-        
-    learning_rate : float, default=1.0
-        Weight applied to each classifier at each boosting iteration.
-        
-    time_limit : float, default=None
-        Maximum time in seconds for the entire fitting process. If None,
-        no time limit is applied. The fitting process will stop early if
-        this time limit is reached, returning the best model found so far.
-        Values must be in the range `(0.0, inf)`.
-    """
     def __init__(
         self,
         max_depth=1,
