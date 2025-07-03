@@ -174,7 +174,6 @@ class BaseWeightBoosting(BaseEnsemble, metaclass=ABCMeta):
                         UserWarning,
                         stacklevel=2,
                     )
-                    print(f"Time limit reached. Fitted {iboost+1}/{self.n_estimators} estimators")
                     break
             
             # avoid extremely small sample weight, for details see issue #20320
