@@ -28,5 +28,8 @@ assert DPDT.score(X_train, y_train) >= CART.score(X_train, y_train), 'DPDT does 
 print(f'CART test accuracy={CART.score(X_test, y_test)}')
 print(f'DPDT test accuracy={DPDT.score(X_test, y_test)}')
 ```
+
+### More about the hyperparameters here
+https://github.com/KohlerHECTOR/DPDTreeEstimator/issues/15
 ### Comparison of different classifiers.
 ![Classifier Comparison](examples/compare_classif.png)
