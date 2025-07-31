@@ -206,6 +206,8 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         ],
         "random_state": ["random_state"],
         "min_impurity_decrease": [Interval(Real, 0.0, None, closed="left")],
+        "criterion": [
+            StrOptions({"gini", "entropy", "log_loss"})],
         "n_jobs": [
             Interval(Integral, 1, None, closed="left"),
             None,
@@ -228,6 +230,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         min_weight_fraction_leaf=0.0,
         max_features=None,
         min_impurity_decrease=0.0,
+        criterion="gini",
     ):
         """Initialize the DPDTreeClassifier."""
         self.max_depth = max_depth
@@ -240,6 +243,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         self.min_weight_fraction_leaf = min_weight_fraction_leaf
         self.max_features = max_features
         self.min_impurity_decrease = min_impurity_decrease
+        self.criterion = criterion
 
     @_fit_context(prefer_skip_nested_validation=True)
     def fit(self, X, y, sample_weight=None):
@@ -439,6 +443,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                     min_samples_leaf=self.min_samples_leaf,
                     min_weight_fraction_leaf=self.min_weight_fraction_leaf,
                     max_features=self.max_features,
+                    criterion=self.criterion,
                 )
             else:
                 clf = DecisionTreeClassifier(
@@ -449,6 +454,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
                     min_samples_leaf=self.min_samples_leaf,
                     min_weight_fraction_leaf=self.min_weight_fraction_leaf,
                     max_features=self.max_features,
+                    criterion=self.criterion,
                 )
             clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
 
