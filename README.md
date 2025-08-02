@@ -29,6 +29,26 @@ print(f'CART test accuracy={CART.score(X_test, y_test)}')
 print(f'DPDT test accuracy={DPDT.score(X_test, y_test)}')
 ```
 
+### AdaBoostDPDT
+```python
+from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import AdaBoostClassifier
+from dpdt import AdaBoostDPDT
+
+X, y = load_wine(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+
+adaboost = AdaBoostClassifier(random_state=42, n_estimators=50)
+adaboost_dpdt = AdaBoostDPDT(random_state=42, n_estimators=50)
+adaboost.fit(X_train, y_train)
+adaboost_dpdt.fit(X_train, y_train)
+
+print(f'AdaBoost test accuracy={adaboost.score(X_test, y_test)}')
+print(f'AdaBoostDPDT test accuracy={adaboost_dpdt.score(X_test, y_test)}')
+```
+
+
 ### More about the hyperparameters here
 https://github.com/KohlerHECTOR/DPDTreeEstimator/issues/15
 ### Comparison of different classifiers.
