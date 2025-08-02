@@ -289,7 +289,10 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
         self._root = State(
             np.concatenate(
-                (-np.inf * np.ones(self.X_.shape[1]), np.inf * np.ones(self.X_.shape[1])),
+                (
+                    -np.inf * np.ones(self.X_.shape[1]),
+                    np.inf * np.ones(self.X_.shape[1]),
+                ),
             ),
             nz=np.ones(self.X_.shape[0], dtype=bool),
             max_action_nb=self.cart_nodes_list[0] + 1,
@@ -529,22 +532,6 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         return self._predict_zeta_decision_rule(X, -1)  # just scores, not lengths
 
     def _predict_zeta_old(self, X, zeta_index, no_stats=False):
-        """Predict class for X using a specific zeta index.
-
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features)
-            The input samples.
-        zeta_index : int
-            The index of the zeta value to use for prediction.
-
-        Returns
-        -------
-        y_pred : array of shape (n_samples,)
-            The predicted classes.
-        lengths : float
-            The average number of decision nodes traversed.
-        """
         init_a = self._trees[tuple(self._root.obs.tolist() + [0])][zeta_index]
         if self.y_.ndim > 1:
             y_pred = np.zeros((len(X), self.y_.shape[1]), dtype=self.y_.dtype)
@@ -572,11 +559,7 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         return (y_pred, lengths.mean(), lengths.max(), len(nodes_))
 
     def _extract_tree(self, trees, obs, depth=0, zeta_index=-1):
-        '''
-        Returns a tree as a dictionary of masks as 
-        keys and predictions as values.
-        '''
-        a = trees[tuple(obs.tolist()+[depth])][zeta_index]
+        a = trees[tuple(obs.tolist() + [depth])][zeta_index]
         if not isinstance(a, tuple):
             self._decision_rules[zeta_index].append((obs, a))
             return None
@@ -584,51 +567,40 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
             feature, threshold = a
             o_l = obs.copy()
             o_r = obs.copy()
-            o_l[len(o_l)//2 + feature] = threshold
+            o_l[len(o_l) // 2 + feature] = threshold
             o_r[feature] = threshold
-            return self._extract_tree(trees, o_l, depth+1, zeta_index), self._extract_tree(trees, o_r, depth+1, zeta_index)
-            
+            return self._extract_tree(
+                trees, o_l, depth + 1, zeta_index
+            ), self._extract_tree(trees, o_r, depth + 1, zeta_index)
+
     def _predict_zeta_decision_rule(self, X, zeta_index=-1):
-        """
-        Apply decision rules using masks and values to predict classes.
-        
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features)
-            The input samples.
-        zeta_index : int
-            The index of the zeta value to use for prediction.
-            
-        Returns
-        -------
-        y_pred : array of shape (n_samples,)
-            The predicted classes.
-        """
         if self.y_.ndim > 1:
             y_pred = np.zeros((len(X), self.y_.shape[1]), dtype=self.y_.dtype)
         else:
             y_pred = np.zeros((len(X)), dtype=self.y_.dtype)
         for mask, pred in self._decision_rules[zeta_index]:
-            # mask format: [feature_0_lower_bound, feature_1_lower_bound, ..., 
+            # mask format: [feature_0_lower_bound, feature_1_lower_bound, ...,
             #               feature_0_upper_bound, feature_1_upper_bound, ...]
             n_features = len(mask) // 2
-            
+
             # Extract lower and upper bounds
             lower_bounds = mask[:n_features]
             upper_bounds = mask[n_features:]
-            
+
             # Vectorized bounds checking using broadcasting
             # X has shape (n_samples, n_features)
             # lower_bounds and upper_bounds have shape (n_features,)
             # Broadcasting will automatically align dimensions
             lower_satisfied = X >= lower_bounds  # shape: (n_samples, n_features)
             upper_satisfied = X <= upper_bounds  # shape: (n_samples, n_features)
-            
+
             # All features must satisfy their bounds (reduce along feature axis)
-            mask_satisfied = np.all(lower_satisfied & upper_satisfied, axis=1)  # shape: (n_samples,)
+            mask_satisfied = np.all(
+                lower_satisfied & upper_satisfied, axis=1
+            )  # shape: (n_samples,)
             # Assign prediction value to samples that satisfy this rule
             y_pred[mask_satisfied] = pred
-            
+
         return y_pred
 
     def get_pareto_front(self, X, y):

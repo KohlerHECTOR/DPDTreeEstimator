@@ -858,7 +858,8 @@ class AdaBoostDPDT(AdaBoostClassifier):
         min_samples_split=2,
         min_impurity_decrease=0,
         cart_nodes_list=(
-            4,
+            8,
+            3,
         ),
         min_samples_leaf=1,
         min_weight_fraction_leaf=0,
