@@ -869,6 +869,7 @@ class AdaBoostDPDT(AdaBoostClassifier):
         n_estimators=50,
         learning_rate=1,
         time_limit=None,
+        criterion = 'gini',
     ):
         super().__init__(
             estimator=DPDTreeClassifier(
@@ -882,6 +883,7 @@ class AdaBoostDPDT(AdaBoostClassifier):
                 max_features=max_features,
                 random_state=random_state,
                 n_jobs=n_jobs,
+                criterion=criterion,
             ),
             n_estimators=n_estimators,
             learning_rate=learning_rate,
