@@ -53,3 +53,22 @@ print(f'AdaBoostDPDT test accuracy={adaboost_dpdt.score(X_test, y_test)}')
 https://github.com/KohlerHECTOR/DPDTreeEstimator/issues/15
 ### Comparison of different classifiers.
 ![Classifier Comparison](examples/compare_classif.png)
+
+### CITE
+```
+@inproceedings{DPDT-Kohler,
+author = {Kohler, Hector and Akrour, Riad and Preux, Philippe},
+title = {Breiman meets Bellman: Non-Greedy Decision Trees with MDPs},
+year = {2025},
+isbn = {9798400714542},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3711896.3736868},
+doi = {10.1145/3711896.3736868},
+pages = {1207–1218},
+numpages = {12},
+keywords = {decision trees, markov decision processes},
+location = {Toronto ON, Canada},
+series = {KDD '25}
+}
+```
