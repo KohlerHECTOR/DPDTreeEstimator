@@ -206,8 +206,7 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
         ],
         "random_state": ["random_state"],
         "min_impurity_decrease": [Interval(Real, 0.0, None, closed="left")],
-        "criterion": [
-            StrOptions({"gini", "entropy", "log_loss"})],
+        "criterion": [StrOptions({"gini", "entropy", "log_loss"})],
         "n_jobs": [
             Interval(Integral, 1, None, closed="left"),
             None,
