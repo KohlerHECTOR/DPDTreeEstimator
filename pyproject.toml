@@ -59,7 +59,7 @@ lint = { depends-on = ["black", "ruff"]}
 pytest = "*"
 pytest-cov = "*"
 
-[tool.pixi.feature.test.target.osx-arm64.dependencies]
+[tool.pixi.feature.test.target.osx.dependencies]
 libgfortran = "*"
 
 [tool.pixi.feature.test.tasks]
