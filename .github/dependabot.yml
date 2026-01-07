@@ -14,5 +14,3 @@ updates:
       actions:
         patterns:
           - "*"
-    reviewers:
-      - "glemaitre"
