@@ -177,12 +177,25 @@ class DPDTreeClassifier(ClassifierMixin, BaseEstimator):
 
     Examples
     --------
+    >>> from sklearn.datasets import load_iris
+    >>> from sklearn.model_selection import train_test_split
+    >>> from sklearn.tree import DecisionTreeClassifier
     >>> from dpdt import DPDTreeClassifier
-    >>> clf = DPDTreeClassifier()
-    >>> clf.fit([[0, 0], [1, 1]], [[0], [1]])
-    DPDTreeClassifier()
-    >>> clf.predict([[2., 2.]])
-    array([1])
+    >>> X, y = load_iris(return_X_y=True)
+    >>> X_train, X_test, y_train, y_test = train_test_split(X, y,
+    ...     test_size=0.33, random_state=42)
+    >>> CART = DecisionTreeClassifier(max_depth=3, random_state=42)
+    >>> DPDT = DPDTreeClassifier(max_depth=3, random_state=42)
+    >>> CART.fit(X_train, y_train)
+    DecisionTreeClassifier(max_depth=3, random_state=42)
+    >>> DPDT.fit(X_train, y_train)
+    DPDTreeClassifier(max_depth=3, random_state=42)
+    >>> assert DPDT.score(X_train, y_train) >= CART.score(X_train,
+    ...     y_train), 'DPDT does not have better train accuract than CART'
+    >>> print(f'CART test accuracy={CART.score(X_test, y_test)}')
+    CART test accuracy=0.98
+    >>> print(f'DPDT test accuracy={DPDT.score(X_test, y_test)}')
+    DPDT test accuracy=0.98
     """
 
     _parameter_constraints = {

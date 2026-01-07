@@ -33,7 +33,7 @@ Issues = "https://github.com/scikit-learn-contrib/project-template/issues"
 [tool.setuptools_scm]
 version_file = "dpdt/_version.py"
 
-[tool.pixi.project]
+[tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 
@@ -53,11 +53,14 @@ ruff = "0.4.2"
 [tool.pixi.feature.lint.tasks]
 black = { cmd = "black --check --diff dpdt && black --check --diff examples" }
 ruff = { cmd = "ruff check --fix --output-format=full dpdt && ruff check --fix --output-format=full examples" }
-lint = { depends_on = ["black", "ruff"]}
+lint = { depends-on = ["black", "ruff"]}
 
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
 pytest-cov = "*"
+
+[tool.pixi.feature.test.target.osx-arm64.dependencies]
+libgfortran = "*"
 
 [tool.pixi.feature.test.tasks]
 test = { cmd = "pytest -vsl --cov=dpdt --cov-report=xml dpdt" }
