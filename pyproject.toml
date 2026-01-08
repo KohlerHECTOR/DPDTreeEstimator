@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "dpdt"
 dynamic = ["version"]
 authors = [
-  { name="Hector Kohler", email="kohler@lix.polytechnique.fr" },
+  { name="Hector Kohler", email="hector.kohler@polytechnique.edu" },
 ]
 description = "Dynamic Programming Decision Trees"
 readme = "README.md"
