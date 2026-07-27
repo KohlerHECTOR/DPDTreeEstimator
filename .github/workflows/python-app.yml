@@ -13,18 +13,18 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        environment: [test]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
-      - uses: prefix-dev/setup-pixi@v0.10.0
+      - uses: actions/setup-python@v5
         with:
-          pixi-version: v0.62.2
-          environments: ${{ matrix.environment }}
-          frozen: true
+          python-version: "3.12"
+
+      - name: Install package and test dependencies
+        run: pip install -e ".[test]"
 
       - name: Run tests
-        run: pixi run -e ${{ matrix.environment }} test
+        run: pytest -vsl --cov=dpdt --cov-report=xml dpdt
 
       # - name: Upload coverage reports to Codecov
       #   uses: codecov/codecov-action@v4.5.0

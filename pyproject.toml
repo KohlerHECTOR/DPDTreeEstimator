@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=8", "pybind11>=2.12"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -30,45 +30,18 @@ classifiers = [
 Homepage = "https://github.com/scikit-learn-contrib/project-template"
 Issues = "https://github.com/scikit-learn-contrib/project-template/issues"
 
+[project.optional-dependencies]
+# Versions aligned with `.pre-commit-config.yaml`.
+lint = ["black==23.3.0", "ruff==0.4.2", "pre-commit==3.7.1"]
+test = ["pytest", "pytest-cov"]
+dev = ["dpdt[lint,test]"]
+
+[tool.setuptools]
+# Explicit flat layout (a stale src/*.egg-info otherwise confuses discovery).
+packages = ["dpdt", "dpdt.tests"]
+
 [tool.setuptools_scm]
 version_file = "dpdt/_version.py"
-
-[tool.pixi.workspace]
-channels = ["conda-forge"]
-platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
-
-[tool.pixi.dependencies]
-python = ">=3.10"
-scikit-learn = ">=1.6"
-
-[tool.pixi.pypi-dependencies]
-dpdt = { path=".", editable=true }
-
-[tool.pixi.feature.lint.dependencies]
-# The version below should be aligned with the one of `.pre-commit-config.yaml`
-black = "23.3.0"
-pre-commit = "3.7.1"
-ruff = "0.4.2"
-
-[tool.pixi.feature.lint.tasks]
-black = { cmd = "black --check --diff dpdt && black --check --diff examples" }
-ruff = { cmd = "ruff check --fix --output-format=full dpdt && ruff check --fix --output-format=full examples" }
-lint = { depends-on = ["black", "ruff"]}
-
-[tool.pixi.feature.test.dependencies]
-pytest = "*"
-pytest-cov = "*"
-
-[tool.pixi.feature.test.target.osx.dependencies]
-libgfortran = "*"
-
-[tool.pixi.feature.test.tasks]
-test = { cmd = "pytest -vsl --cov=dpdt --cov-report=xml dpdt" }
-
-[tool.pixi.environments]
-lint = ["lint"]
-test = ["test"]
-dev = ["lint", "test"]
 
 [tool.black]
 line-length = 88

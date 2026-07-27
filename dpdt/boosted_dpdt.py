@@ -898,3 +898,4 @@ class AdaBoostDPDT(AdaBoostClassifier):
         self.min_weight_fraction_leaf = min_weight_fraction_leaf
         self.max_features = max_features
         self.n_jobs = n_jobs
+        self.criterion = criterion

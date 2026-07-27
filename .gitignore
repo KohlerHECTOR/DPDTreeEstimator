@@ -68,8 +68,6 @@ doc/sg_execution_times.rst
 # PyBuilder
 target/
 
-.pixi
-
 # General
 .DS_Store
 .AppleDouble
@@ -83,3 +81,4 @@ profile.txt
 
 # perso
 commands_before_push.txt
+.venv

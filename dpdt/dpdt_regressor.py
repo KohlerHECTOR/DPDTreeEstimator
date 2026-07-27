@@ -1,78 +1,31 @@
-"""Dynamic Programming Decision Tree (DPDTree) regressor implementation."""
-from copy import deepcopy
+"""Dynamic Programming Decision Tree (DPDTree) regressor implementation.
+
+The heavy lifting (MDP construction and the dynamic program) is implemented in
+C++ (see ``dpdt/_core.cpp``); this module is a thin scikit-learn compatible
+wrapper around it. The public API (``DPDTreeRegressor().fit(X, y)`` /
+``predict`` / ``get_pareto_front``) is unchanged.
+"""
+
 from numbers import Integral, Real
 
 import numpy as np
 from sklearn.base import BaseEstimator, MultiOutputMixin, RegressorMixin, _fit_context
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import r2_score
 from sklearn.utils._param_validation import Interval, RealNotInt, StrOptions
-from sklearn.utils.parallel import Parallel, delayed
 from sklearn.utils.validation import (
     _check_sample_weight,
     check_is_fitted,
+    check_random_state,
     validate_data,
 )
 
-
-class State:
-    """Represent a state in the Markov Decision Process (MDP).
-
-    Parameters
-    ----------
-    label : array-like
-        The observation label for the state.
-    nz : array-like of bool
-        Boolean array indicating which samples are present in the state.
-    is_terminal : bool, default=False
-        Indicates if the state is a terminal state.
-    """
-
-    def __init__(self, label, nz, is_terminal=False, max_action_nb=32):
-        """Initialize the State object."""
-        self.obs = label
-        self.is_terminal = is_terminal
-        self.nz = nz
-        self._actions = [0] * max_action_nb
-        self._counter_action = 0
-
-    def add_action(self, action):
-        """Add an action to the state.
-
-        Parameters
-        ----------
-        action : Action
-            The action to be added to the state.
-        """
-        self._actions[self._counter_action] = action
-        self._counter_action += 1
-
-    def valid_actions(self):
-        """return the list of possible actions in that state.
-
-        Returns
-        -------
-        valid_acts : list
-            Returns non-zero actions.
-        """
-        return self._actions[: self._counter_action]
-
-
-class Action:
-    """Represent an action in the Markov Decision Process (MDP).
-
-    Parameters
-    ----------
-    action : object
-        The action representation (e.g., a split decision).
-    """
-
-    def __init__(self, action, reward, proba, next_s):
-        """Initialize the Action object."""
-        self.action_label = action
-        self.rewards = reward
-        self.probas = proba
-        self.next_states = next_s
+try:
+    from . import _core
+except ImportError as e:  # pragma: no cover
+    raise ImportError(
+        "The compiled extension dpdt._core is missing. Build it with "
+        "`pip install -e .` (requires a C++17 compiler and pybind11)."
+    ) from e
 
 
 class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
@@ -155,24 +108,17 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         The input passed during :meth:`fit`.
     y_ : ndarray, shape (n_samples,)
         The labels passed during :meth:`fit`.
-    classes_ : ndarray, shape (n_classes,)
-        The classes seen at :meth:`fit`.
     n_features_in_ : int
         Number of features seen during :term:`fit`.
     feature_names_in_ : ndarray of shape (`n_features_in_`,)
         Names of features seen during :term:`fit`. Defined only when `X`
         has feature names that are all strings.
-    mdp : list of list of State
-        The Markov Decision Process represented as a list of lists of states,
-        where each inner list contains the states at a specific depth.
-    zetas : array-like
-        Array of zeta values to be used in the computation.
-    trees : dict
-        A dictionary representing the tree policies. The keys are tuples representing
-        the state observation and depth, and the values are the optimal tree
-        for each zeta value.
-    init_o : array-like
-        The initial observation of the MDP.
+    trees_ : list of dict of ndarray
+        One flat tree per zeta value. Each tree is a dict with keys
+        ``feature`` (-1 for leaves), ``threshold``, ``children_left``,
+        ``children_right`` and ``value`` (per-output leaf means).
+    zetas_ : ndarray
+        Array of zeta values used in the computation.
 
     Examples
     --------
@@ -270,252 +216,107 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         X, y = validate_data(self, X, y, multi_output=True, y_numeric=True)
 
         if sample_weight is not None:
-            self._sample_weight = _check_sample_weight(sample_weight, X)
+            sample_weight = _check_sample_weight(sample_weight, X, dtype=np.float64)
             if y.squeeze().ndim > 1:
                 raise AssertionError(
                     "sample weights are not yet supported for multioutput predictions"
                 )
         else:
-            self._sample_weight = np.ones(len(X), dtype=np.float32)
+            sample_weight = np.ones(X.shape[0], dtype=np.float64)
 
         self.X_ = X
         self.y_ = y.astype(float)
 
-        if self.max_nb_trees == 1:
-            self._zetas = np.zeros(1, dtype=np.float32)
-        else:
-            self._zetas = np.linspace(-1, 0, self.max_nb_trees, dtype=np.float32)
-            assert len(self._zetas) == self.max_nb_trees
+        # The core always works with 2D targets of shape (n_samples, n_outputs).
+        y2d = np.ascontiguousarray(self.y_.reshape(len(self.y_), -1))
 
-        self._root = State(
-            np.concatenate(
-                (
-                    -np.inf * np.ones(self.X_.shape[1]),
-                    np.inf * np.ones(self.X_.shape[1]),
-                ),
-            ),
-            nz=np.ones(self.X_.shape[0], dtype=bool),
-            max_action_nb=self.cart_nodes_list[0] + 1,
+        n_samples, n_features = X.shape
+
+        if self.max_nb_trees == 1:
+            self.zetas_ = np.zeros(1, dtype=np.float64)
+        else:
+            self.zetas_ = np.linspace(-1, 0, self.max_nb_trees, dtype=np.float64)
+
+        # --- resolve sklearn-style hyper-parameters for the C++ core --------
+        # max_depth=None means "grow until pure"; a chain of binary splits can
+        # never be deeper than n_samples - 1, which the C++ core uses as the
+        # upper bound to pre-size its per-depth scratch buffers. [BOUND-1]
+        max_depth = (
+            self.max_depth if self.max_depth is not None else max(1, n_samples - 1)
         )
 
-        self._count_ops = 0
-        self._terminal_state = np.zeros(2 * self.X_.shape[1], dtype=np.float64)
+        if self.max_features is None:
+            max_features = n_features
+        elif isinstance(self.max_features, str):
+            if self.max_features == "sqrt":
+                max_features = max(1, int(np.sqrt(n_features)))
+            else:  # log2
+                max_features = max(1, int(np.log2(n_features)))
+        elif isinstance(self.max_features, Integral):
+            max_features = int(self.max_features)
+        else:  # fraction
+            max_features = max(1, int(self.max_features * n_features))
 
-        self._trees = self._build_mdp_opt_pol_parallel()
-        self._decision_rules = [[] for _ in range(self.max_nb_trees)]
-        for zeta_idx in range(self.max_nb_trees):
-            self._extract_tree(self._trees, self._root.obs, 0, zeta_idx)
+        # Fractional min_samples_* are resolved *per state* inside the core
+        # (each inner CART is fit on the state's samples, mirroring the
+        # previous implementation which called DecisionTreeRegressor.fit on
+        # X[state]). We therefore forward the raw value plus a fraction flag.
+        mss_is_fraction = not isinstance(self.min_samples_split, Integral)
+        msl_is_fraction = not isinstance(self.min_samples_leaf, Integral)
+
+        seed = check_random_state(self.random_state).randint(np.iinfo(np.int32).max)
+
+        if self.n_jobs is None:
+            n_jobs = 1
+        elif self.n_jobs == "best":
+            n_jobs = 0  # let the core use min(#root candidates, hw threads)
+        else:
+            n_jobs = int(self.n_jobs)
+
+        # The C++ core builds the MDP, runs the branch-and-bound dynamic
+        # program and returns one already-extracted flat tree per zeta.
+        self.trees_ = _core.fit_regressor(
+            np.ascontiguousarray(X, dtype=np.float64),
+            y2d,
+            sample_weight,
+            self.zetas_,
+            int(max_depth),
+            [int(c) for c in self.cart_nodes_list],
+            float(self.min_samples_split),
+            bool(mss_is_fraction),
+            float(self.min_samples_leaf),
+            bool(msl_is_fraction),
+            float(self.min_weight_fraction_leaf),
+            int(max_features),
+            float(self.min_impurity_decrease),
+            int(seed),
+            n_jobs,
+        )
         return self
 
-    def _build_mdp_opt_pol_parallel(self):
-        """Build the Markov Decision Process (MDP) for the trees.
-
-        This method constructs an MDP using a depth-first search approach. Each node
-        in the tree represents a state in the MDP, and actions are determined based
-        on potential splits from a decision tree regressor.
-
-        Returns
-        -------
-        dict
-            A dictionary representing the tree policies.
-        """
-        # BFS
-        root = self._expand_node(self._root, 0)
-        depth_0 = [
-            state for action in root.valid_actions() for state in action.next_states
-        ]
-
-        trees = {}
-        list_s_with_qs = [None] * len(depth_0)
-
-        # Initialize terminal states
-        for i in range(2):
-            list_s_with_qs[i] = deepcopy(depth_0[i])
-            list_s_with_qs[i].qs = np.zeros((1, self.max_nb_trees), dtype=np.float32)
-
-        # Process non-terminal states
-        # Copies n_jobs times the Datasets (heavy RAM)
-        if self.n_jobs == "best":
-            n_jobs = max(1, len(depth_0[2:]))
-        else:
-            n_jobs = self.n_jobs
-
-        results = Parallel(n_jobs=n_jobs, prefer="threads")(
-            delayed(self._dfs)(deepcopy(root), deepcopy(s), depth=1)
-            for s in depth_0[2:]
+    def _predict_zeta(self, X, zeta_index):
+        """Route X through the tree of one zeta; return predictions and stats."""
+        t = self.trees_[zeta_index]
+        y_pred, lengths, n_nodes = _core.predict_tree_reg(
+            np.ascontiguousarray(X, dtype=np.float64),
+            t["feature"],
+            t["threshold"],
+            t["children_left"],
+            t["children_right"],
+            t["value"],
         )
-
-        for i, (s_with_qs, local_trees) in enumerate(results, start=2):
-            list_s_with_qs[i] = s_with_qs
-            trees.update(local_trees)
-        del depth_0
-
-        qs = np.zeros((root._counter_action, self.max_nb_trees), dtype=np.float32)
-        for a_idx, a in enumerate(root.valid_actions()):
-            q = sum(
-                p * s.qs.max(axis=0)
-                for s, p in zip(list_s_with_qs[a_idx * 2 : (a_idx + 1) * 2], a.probas)
-            )
-            qs[a_idx, :] = np.mean(a.rewards, axis=0) + q
-        idx = np.argmax(qs, axis=0)
-        root.qs = qs
-        trees[tuple(root.obs.tolist() + [0])] = [
-            root.valid_actions()[i].action_label for i in idx
-        ]
-        root._actions = None  # for memory saving
-        return trees
-
-    def _dfs(self, root_copy, state_copy, depth):
-        stack = [(state_copy, depth)]
-        expanded = [None, root_copy]
-        local_trees = {}
-        while stack:
-            tmp, d = stack[-1]
-
-            if tmp is expanded[-1]:
-                # Do backprop
-                qs = np.array(
-                    [
-                        a.rewards.mean(axis=0)
-                        + sum(
-                            p * s.qs.max(axis=0)
-                            for s, p in zip(a.next_states, a.probas)
-                        )
-                        for a in tmp.valid_actions()
-                    ]
-                )
-
-                idx = np.argmax(qs, axis=0)
-                tmp.qs = qs
-                local_trees[tuple(tmp.obs.tolist() + [d])] = [
-                    tmp.valid_actions()[i].action_label for i in idx
-                ]
-
-                tmp._actions = None  # for memory saving
-                expanded.pop()
-                stack.pop()
-
-            elif not tmp.is_terminal:
-                tmp = self._expand_node(tmp, d)
-                expanded.append(tmp)
-                stack.extend(
-                    (s, d + 1) for a in tmp.valid_actions() for s in a.next_states
-                )
-
-            else:  # tmp is a terminal state
-                # Set qs for terminal states
-                for next_state in expanded[-1].valid_actions()[0].next_states:
-                    next_state.qs = np.zeros((1, self.max_nb_trees), dtype=np.float32)
-                stack.pop()
-        return state_copy, local_trees
-
-    def _expand_node(self, node, depth=0):
-        """Expand a node in the MDP.
-
-        This method performs node expansion, action creation, and transition
-        for the given node in the MDP.
-
-        Parameters
-        ----------
-        node : State
-            The node to expand.
-        depth : int, default=0
-            The current depth of the node.
-
-        Returns
-        -------
-        State
-            The expanded node.
-        """
-        astar = np.average(
-            self.y_[node.nz], weights=self._sample_weight[node.nz], axis=0
+        # Follow the shape of the fit-time targets (1D or 2D).
+        if self.y_.ndim == 1:
+            y_pred = y_pred.ravel()
+        return (
+            y_pred,
+            float(lengths.mean()),
+            int(lengths.max()),
+            int(n_nodes),
         )
-        rstar = -1 * mean_squared_error(
-            self.y_[node.nz],
-            np.tile(astar, (len(self.y_[node.nz]), 1)),
-            sample_weight=self._sample_weight[node.nz],
-        )
-        rew = np.full((2, self.max_nb_trees), rstar, dtype=np.float32)
-
-        terminal_state = State(label=self._terminal_state, nz=[0], is_terminal=True)
-        node.add_action(Action(astar, rew, (1, 0), (terminal_state, terminal_state)))
-
-        if rstar < 0 and depth < self.max_depth:
-            if depth < len(self.cart_nodes_list):
-                clf = DecisionTreeRegressor(
-                    max_leaf_nodes=max(2, self.cart_nodes_list[depth]),
-                    random_state=self.random_state,
-                    min_samples_split=self.min_samples_split,
-                    min_impurity_decrease=self.min_impurity_decrease,
-                    min_samples_leaf=self.min_samples_leaf,
-                    min_weight_fraction_leaf=self.min_weight_fraction_leaf,
-                    max_features=self.max_features,
-                )
-            else:
-                clf = DecisionTreeRegressor(
-                    max_leaf_nodes=2,
-                    random_state=self.random_state,
-                    min_samples_split=self.min_samples_split,
-                    min_impurity_decrease=self.min_impurity_decrease,
-                    min_samples_leaf=self.min_samples_leaf,
-                    min_weight_fraction_leaf=self.min_weight_fraction_leaf,
-                    max_features=self.max_features,
-                )
-            clf.fit(self.X_[node.nz], self.y_[node.nz], self._sample_weight[node.nz])
-
-            masks = clf.tree_.feature >= 0
-            valid_features = clf.tree_.feature[masks]
-            valid_thresholds = clf.tree_.threshold[masks]
-
-            lefts = (self.X_[:, valid_features] <= valid_thresholds) & node.nz[
-                :, np.newaxis
-            ]
-            rights = ~lefts & node.nz[:, np.newaxis]
-
-            p_left = lefts.sum(axis=0) / node.nz.sum()
-            p_right = 1 - p_left
-
-            feat_thresh = list(zip(valid_features, valid_thresholds))
-
-            next_obs_left = np.tile(node.obs, (len(feat_thresh), 1))
-            next_obs_right = np.tile(node.obs, (len(feat_thresh), 1))
-
-            next_obs_left[
-                np.arange(len(feat_thresh)), self.X_.shape[1] + valid_features
-            ] = valid_thresholds
-            next_obs_right[np.arange(len(feat_thresh)), valid_features] = (
-                valid_thresholds
-            )
-            act_max = (
-                self.cart_nodes_list[depth + 1]
-                if depth + 1 < len(self.cart_nodes_list)
-                else 1
-            )
-
-            next_states_left = [
-                State(obs, nz, max_action_nb=act_max + 1)
-                for obs, nz in zip(next_obs_left, lefts.T)
-            ]
-            next_states_right = [
-                State(obs, nz, max_action_nb=act_max + 1)
-                for obs, nz in zip(next_obs_right, rights.T)
-            ]
-
-            actions = [
-                Action(split, np.tile(self._zetas, (2, 1)), (pl, pr), (sl, sr))
-                for split, pl, pr, sl, sr in zip(
-                    feat_thresh, p_left, p_right, next_states_left, next_states_right
-                )
-                if not (pl == 0 or pr == 0)
-            ]
-
-            for action in actions:
-                node.add_action(action)
-            self._count_ops += len(actions)
-        return node
 
     def predict(self, X):
-        """Predict class labels for samples in X.
+        """Predict regression targets for samples in X.
 
         Parameters
         ----------
@@ -524,84 +325,12 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
 
         Returns
         -------
-        y : ndarray, shape (n_samples,)
-            The predicted class labels.
+        y : ndarray, shape (n_samples,) or (n_samples, n_outputs)
+            The predicted values.
         """
         check_is_fitted(self)
         X = validate_data(self, X, y="no_validation", reset=False)
-        return self._predict_zeta_decision_rule(X, -1)  # just scores, not lengths
-
-    def _predict_zeta_old(self, X, zeta_index, no_stats=False):
-        init_a = self._trees[tuple(self._root.obs.tolist() + [0])][zeta_index]
-        if self.y_.ndim > 1:
-            y_pred = np.zeros((len(X), self.y_.shape[1]), dtype=self.y_.dtype)
-        else:
-            y_pred = np.zeros((len(X)), dtype=self.y_.dtype)
-        lengths = np.zeros(X.shape[0], dtype=np.float32)
-        nodes_ = [init_a]
-        for i, x in enumerate(X):
-            a = init_a
-            o = self._root.obs.copy()
-            H = 0
-            while isinstance(a, tuple):  # a is int implies leaf node
-                if not no_stats:
-                    if a not in nodes_:
-                        nodes_.append(a)
-                feature, threshold = a
-                H += 1
-                if x[feature] <= threshold:
-                    o[x.shape[0] + feature] = threshold
-                else:
-                    o[feature] = threshold
-                a = self._trees[tuple(o.tolist() + [H])][zeta_index]
-            lengths[i] = H
-            y_pred[i] = a
-        return (y_pred, lengths.mean(), lengths.max(), len(nodes_))
-
-    def _extract_tree(self, trees, obs, depth=0, zeta_index=-1):
-        a = trees[tuple(obs.tolist() + [depth])][zeta_index]
-        if not isinstance(a, tuple):
-            self._decision_rules[zeta_index].append((obs, a))
-            return None
-        else:
-            feature, threshold = a
-            o_l = obs.copy()
-            o_r = obs.copy()
-            o_l[len(o_l) // 2 + feature] = threshold
-            o_r[feature] = threshold
-            return self._extract_tree(
-                trees, o_l, depth + 1, zeta_index
-            ), self._extract_tree(trees, o_r, depth + 1, zeta_index)
-
-    def _predict_zeta_decision_rule(self, X, zeta_index=-1):
-        if self.y_.ndim > 1:
-            y_pred = np.zeros((len(X), self.y_.shape[1]), dtype=self.y_.dtype)
-        else:
-            y_pred = np.zeros((len(X)), dtype=self.y_.dtype)
-        for mask, pred in self._decision_rules[zeta_index]:
-            # mask format: [feature_0_lower_bound, feature_1_lower_bound, ...,
-            #               feature_0_upper_bound, feature_1_upper_bound, ...]
-            n_features = len(mask) // 2
-
-            # Extract lower and upper bounds
-            lower_bounds = mask[:n_features]
-            upper_bounds = mask[n_features:]
-
-            # Vectorized bounds checking using broadcasting
-            # X has shape (n_samples, n_features)
-            # lower_bounds and upper_bounds have shape (n_features,)
-            # Broadcasting will automatically align dimensions
-            lower_satisfied = X >= lower_bounds  # shape: (n_samples, n_features)
-            upper_satisfied = X <= upper_bounds  # shape: (n_samples, n_features)
-
-            # All features must satisfy their bounds (reduce along feature axis)
-            mask_satisfied = np.all(
-                lower_satisfied & upper_satisfied, axis=1
-            )  # shape: (n_samples,)
-            # Assign prediction value to samples that satisfy this rule
-            y_pred[mask_satisfied] = pred
-
-        return y_pred
+        return self._predict_zeta(X, -1)[0]
 
     def get_pareto_front(self, X, y):
         """Compute the decision path lengths / test accuracy Pareto front of DPDTrees.
@@ -620,26 +349,20 @@ class DPDTreeRegressor(RegressorMixin, MultiOutputMixin, BaseEstimator):
         decision_path_length : array-like of shape (n_samples)
             The average number of decision nodes traversal in each tree.
         """
-        scores = np.zeros(len(self._zetas), dtype=np.float32)
-        decision_path_length = np.zeros(len(self._zetas), dtype=np.float32)
-        decision_path_max_depth = np.zeros(len(self._zetas), dtype=np.int32)
-        decision_path_nodes = np.zeros(len(self._zetas), dtype=np.int32)
+        check_is_fitted(self)
+        n_zetas = len(self.zetas_)
+        scores = np.zeros(n_zetas, dtype=np.float32)
+        decision_path_length = np.zeros(n_zetas, dtype=np.float32)
+        decision_path_max_depth = np.zeros(n_zetas, dtype=np.int32)
+        decision_path_nodes = np.zeros(n_zetas, dtype=np.int32)
 
-        if self.n_jobs == "best":
-            n_jobs = max(1, len(self._zetas))
-        else:
-            n_jobs = self.n_jobs
-
-        results = Parallel(
-            n_jobs=n_jobs,
-            prefer="threads",
-        )(delayed(self._predict_zeta)(X, z) for z in range(len(self._zetas)))
-
-        for z, pred_length in enumerate(results):
-            scores[z] = (r2_score(y, pred_length[0]),)
-            decision_path_length[z] = pred_length[1]
-            decision_path_max_depth[z] = pred_length[2]
-            decision_path_nodes[z] = pred_length[3]
+        # Tree traversal is in C++ now; joblib fan-out would only add overhead.
+        for z in range(n_zetas):
+            y_pred, mean_len, max_len, n_nodes = self._predict_zeta(X, z)
+            scores[z] = r2_score(y, y_pred)
+            decision_path_length[z] = mean_len
+            decision_path_max_depth[z] = max_len
+            decision_path_nodes[z] = n_nodes
 
         return (
             scores,

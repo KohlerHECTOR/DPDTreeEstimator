@@ -13,11 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: prefix-dev/setup-pixi@v0.10.0
+      - uses: actions/setup-python@v5
         with:
-          pixi-version: v0.62.2
-          environments: lint
-          frozen: true
+          python-version: "3.12"
+
+      - name: Install lint dependencies
+        run: pip install -e ".[lint]"
 
       - name: Run linter
-        run: pixi run -e lint lint
+        run: |
+          black --check --diff dpdt examples
+          ruff check --output-format=full dpdt examples
