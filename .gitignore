@@ -82,3 +82,4 @@ profile.txt
 # perso
 commands_before_push.txt
 .venv
+.pytest_cache
